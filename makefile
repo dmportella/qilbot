@@ -53,13 +53,13 @@ cover:
 
 generate:
 	@echo "GO GENERATE..."
-	@go generate $(go list ./... | grep -v /vendor/)
+	@go generate $(go list ./... | grep -v /vendor/) ./
 
 # vet runs the Go source code static analysis tool `vet` to find
 # any common errors.
 vet:
 	@echo "GO VET..."
-	@go tool vet $(VETARGS) $$(ls -d */ | grep -v vendor) ; if [ $$? -eq 1 ]; then \
+	@go tool vet $(VETARGS) $$(ls -d */ | grep -v vendor) ./; if [ $$? -eq 1 ]; then \
 		echo ""; \
 		echo "Vet found suspicious constructs. Please check the reported constructs"; \
 		echo "and fix them if necessary before submitting the code for review."; \
