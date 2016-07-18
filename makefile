@@ -12,6 +12,7 @@ commit:
 	@git add . 
 	-@git rm $(git ls-files --others --deleted --exclude-standard)
 	@git commit 
+	@git status
 push:
 	@git push origin ${BRANCH}
 
