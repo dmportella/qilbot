@@ -8,9 +8,12 @@ Qilbot is a discord bot written in `GOLANG`.
 
 ```
 .
+├── edsm
+│   └── distances.go
 ├── LICENSE
 ├── main.go
 ├── makefile
+├── qilbot
 ├── README.md
 └── vendor
     ├── github.com
@@ -68,5 +71,5 @@ Qilbot is a discord bot written in `GOLANG`.
     │                   └── salsa20_ref.go
     └── vendor.json
 
-14 directories, 45 files
+15 directories, 47 files
 ```
