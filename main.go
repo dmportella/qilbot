@@ -4,7 +4,9 @@ import (
 	"flag"
 	"fmt"
 	"github.com/bwmarrin/discordgo"
-	"math"
+	"github.com/dmportella/qilbot/edsm"
+	"regexp"
+	"strings"
 )
 
 // Build version of the binary
@@ -33,19 +35,14 @@ func init() {
 }
 
 func main() {
-	fmt.Printf("Golang tutorial version %s, branch %s at revision %s.\n\rDaniel Portella (c) 2016\n\r", Build, Branch, Revision)
+	go startbot()
 
-	bava := [3]float64{83.40625, -134.3125, -80.75}
-	sothis := [3]float64{-352.78125, 10.5, -346.34375}
+	fmt.Println("Bot is now running.  Press CTRL-C to exit.")
+	// Simple way to keep program running until CTRL-C is pressed.
+	<-make(chan struct{})
+}
 
-	deltaX := bava[0] - sothis[0]
-	deltaY := bava[1] - sothis[1]
-	deltaZ := bava[2] - sothis[2]
-
-	distance := math.Sqrt(deltaX*deltaX + deltaY*deltaY + deltaZ*deltaZ)
-
-	fmt.Printf("distance between bava and sothis is: %f\n", distance)
-
+func startbot() {
 	// Create a new Discord session using the provided login information.
 	dg, err := discordgo.New(Email, Password, Token)
 	if err != nil {
@@ -57,6 +54,7 @@ func main() {
 	u, err := dg.User("@me")
 	if err != nil {
 		fmt.Println("error obtaining account details,", err)
+		panic(err)
 	}
 
 	// Store the account ID for later use.
@@ -69,13 +67,8 @@ func main() {
 	err = dg.Open()
 	if err != nil {
 		fmt.Println("error opening connection,", err)
-		return
+		panic(err)
 	}
-
-	fmt.Println("Bot is now running.  Press CTRL-C to exit.")
-	// Simple way to keep program running until CTRL-C is pressed.
-	<-make(chan struct{})
-	return
 }
 
 // This function will be called (due to AddHandler above) every time a new
@@ -87,13 +80,40 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 		return
 	}
 
-	// If the message is "ping" reply with "Pong!"
-	if m.Content == "ping" {
-		_, _ = s.ChannelMessageSend(m.ChannelID, "Pong!")
+	actionPattern := regexp.MustCompile(`^<@([0-9]+)>\s([a-z]+)\s?(.*)`)
+	matches := actionPattern.FindStringSubmatch(m.Content)
+
+	fmt.Println(m.Content)
+
+	if len(matches) >= 3 && matches[1] == BotID {
+
+		switch matches[2] {
+		case "distance":
+			placesPattern := regexp.MustCompile(`^(.*)\s?\/\s?(.*)`)
+			placeMatches := placesPattern.FindStringSubmatch(matches[3])
+
+			if len(placeMatches) != 0 {
+				sys1 := strings.TrimSpace(placeMatches[1])
+				sys2 := strings.TrimSpace(placeMatches[2])
+				if distance, err := edsm.GetDistanceBetweenTwoSystems(sys1, sys2); err == nil {
+					_, _ = s.ChannelMessageSend(m.ChannelID, fmt.Sprintf("The distance between **%s** and **%s** is **%.2fly**.", placeMatches[1], placeMatches[2], distance))
+				} else {
+					_, _ = s.ChannelMessageSend(m.ChannelID, "There was an error trying to get the distance.")
+				}
+			} else {
+				_, _ = s.ChannelMessageSend(m.ChannelID, "Please give ma two places, format: distance **A** / **B**")
+			}
+			break
+		case "ping":
+			_, _ = s.ChannelMessageSend(m.ChannelID, "Pong!")
+			break
+		case "pong":
+			_, _ = s.ChannelMessageSend(m.ChannelID, "Ping!")
+			break
+		default:
+			_, _ = s.ChannelMessageSend(m.ChannelID, "What?! I dont know what you mean...")
+		}
 	}
 
-	// If the message is "pong" reply with "Ping!"
-	if m.Content == "pong" {
-		_, _ = s.ChannelMessageSend(m.ChannelID, "Ping!")
-	}
+	//
 }
