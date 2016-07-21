@@ -85,6 +85,8 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 
 	fmt.Println(m.Content)
 
+	client := edsm.NewEDSMClient()
+
 	if len(matches) >= 3 && matches[1] == BotID {
 
 		switch matches[2] {
@@ -95,7 +97,7 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 			if len(placeMatches) != 0 {
 				sys1 := strings.TrimSpace(placeMatches[1])
 				sys2 := strings.TrimSpace(placeMatches[2])
-				if distance, err := edsm.GetDistanceBetweenTwoSystems(sys1, sys2); err == nil {
+				if distance, err := client.GetDistanceBetweenTwoSystems(sys1, sys2); err == nil {
 					_, _ = s.ChannelMessageSend(m.ChannelID, fmt.Sprintf("The distance between **%s** and **%s** is **%.2fly**.", placeMatches[1], placeMatches[2], distance))
 				} else {
 					_, _ = s.ChannelMessageSend(m.ChannelID, "There was an error trying to get the distance.")
@@ -109,6 +111,10 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 			break
 		case "pong":
 			_, _ = s.ChannelMessageSend(m.ChannelID, "Ping!")
+			break
+		case "plugin":
+			//plugin := plugins.Plugin{Name: "EDSM Plugin", Description: "Elite Dangerous System Mapping"}
+			_, _ = s.ChannelMessageSend(m.ChannelID, client.GetHelpText())
 			break
 		default:
 			_, _ = s.ChannelMessageSend(m.ChannelID, "What?! I dont know what you mean...")
