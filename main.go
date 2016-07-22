@@ -3,20 +3,20 @@ package main
 import (
 	"flag"
 	"fmt"
-	"github.com/bwmarrin/discordgo"
-	"github.com/dmportella/qilbot/edsm"
-	"regexp"
-	"strings"
+	"github.com/dmportella/qilbot/bot"
+	"github.com/dmportella/qilbot/logging"
+	"github.com/dmportella/qilbot/plugins/common"
+	"github.com/dmportella/qilbot/plugins/edsm"
+	"io/ioutil"
+	"os"
 )
 
-// Build version of the binary
-var Build string
-
-// Revision number of the binary
-var Revision string
-
-// Branch name of the binary
-var Branch string
+// Set on build
+var (
+	Build    string
+	Branch   string
+	Revision string
+)
 
 // Variables used for command line parameters
 var (
@@ -24,102 +24,88 @@ var (
 	Password string
 	Token    string
 	BotID    string
+	Version  bool
+	Verbose  bool
+)
+
+var (
+	botInstance bot.Qilbot
 )
 
 func init() {
+	const (
+		defaultEmail    = ""
+		emailUsage      = "The email of te discord user. Not required if -bot-token is provided."
+		defaultPassword = ""
+		passwordUsage   = "The password of te discord user. Not required if -bot-token is provided."
+		defaultToken    = ""
+		tokenUsage      = "The token for the dicord bot. For more information please visit: https://discordapp.com/developers"
+	)
 
-	flag.StringVar(&Email, "e", "", "Account Email")
-	flag.StringVar(&Password, "p", "", "Account Password")
-	flag.StringVar(&Token, "t", "", "Account Token")
+	flag.StringVar(&Email, "user-email", defaultEmail, emailUsage)
+	flag.StringVar(&Password, "user-password", defaultPassword, passwordUsage)
+	flag.StringVar(&Token, "bot-token", defaultToken, tokenUsage)
+	flag.StringVar(&Email, "e", defaultEmail, emailUsage)
+	flag.StringVar(&Password, "p", defaultPassword, passwordUsage)
+	flag.StringVar(&Token, "t", defaultToken, tokenUsage)
+
+	const (
+		defaultVerbose = false
+		verboseUsage   = "Redirect trace information to the standard out."
+	)
+
+	flag.BoolVar(&Verbose, "verbose", defaultVerbose, verboseUsage)
 	flag.Parse()
 }
 
 func main() {
+	fmt.Printf("Qilbot - Version: %s Branch: %s Revision: %s.\n\rDaniel Portella (c) 2016\n\r", Build, Branch, Revision)
+
+	if Verbose {
+		logging.Init(os.Stdout, os.Stdout, os.Stdout, os.Stderr)
+	} else {
+		logging.Init(ioutil.Discard, os.Stdout, os.Stdout, os.Stderr)
+	}
+
+	if Password == "" && Email == "" && Token == "" {
+		logging.Error.Println("Please provide credentials.")
+		os.Exit(1)
+	}
+
+	botConfig := bot.QilbotConfig{
+		Email:    Email,
+		Password: Password,
+		Token:    Token,
+	}
+
+	bot, ok := bot.New(&botConfig)
+
+	if ok != nil {
+		os.Exit(2)
+	} else {
+		botInstance = *bot
+	}
+
+	loadPlugins()
+
 	go startbot()
 
-	fmt.Println("Bot is now running.  Press CTRL-C to exit.")
 	// Simple way to keep program running until CTRL-C is pressed.
 	<-make(chan struct{})
 }
 
-func startbot() {
-	// Create a new Discord session using the provided login information.
-	dg, err := discordgo.New(Email, Password, Token)
-	if err != nil {
-		fmt.Println("error creating Discord session,", err)
-		return
-	}
+func loadPlugins() {
+	commonPlugin := common.New()
+	edsmPlugin := edsm.New()
 
-	// Get the account information.
-	u, err := dg.User("@me")
-	if err != nil {
-		fmt.Println("error obtaining account details,", err)
-		panic(err)
-	}
-
-	// Store the account ID for later use.
-	BotID = u.ID
-
-	// Register messageCreate as a callback for the messageCreate events.
-	dg.AddHandler(messageCreate)
-
-	// Open the websocket and begin listening.
-	err = dg.Open()
-	if err != nil {
-		fmt.Println("error opening connection,", err)
-		panic(err)
-	}
+	botInstance.AddPlugin(&commonPlugin)
+	botInstance.AddPlugin(&edsmPlugin)
 }
 
-// This function will be called (due to AddHandler above) every time a new
-// message is created on any channel that the autenticated bot has access to.
-func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
-
-	// Ignore all messages created by the bot itself
-	if m.Author.ID == BotID {
-		return
+func startbot() {
+	if ok := botInstance.Start(); ok == nil {
+		logging.Info.Println("Bot is now running.  Press CTRL-C to exit.")
+	} else {
+		panic(ok)
 	}
-
-	actionPattern := regexp.MustCompile(`^<@([0-9]+)>\s([a-z]+)\s?(.*)`)
-	matches := actionPattern.FindStringSubmatch(m.Content)
-
-	fmt.Println(m.Content)
-
-	client := edsm.NewEDSMClient()
-
-	if len(matches) >= 3 && matches[1] == BotID {
-
-		switch matches[2] {
-		case "distance":
-			placesPattern := regexp.MustCompile(`^(.*)\s?\/\s?(.*)`)
-			placeMatches := placesPattern.FindStringSubmatch(matches[3])
-
-			if len(placeMatches) != 0 {
-				sys1 := strings.TrimSpace(placeMatches[1])
-				sys2 := strings.TrimSpace(placeMatches[2])
-				if distance, err := client.GetDistanceBetweenTwoSystems(sys1, sys2); err == nil {
-					_, _ = s.ChannelMessageSend(m.ChannelID, fmt.Sprintf("The distance between **%s** and **%s** is **%.2fly**.", placeMatches[1], placeMatches[2], distance))
-				} else {
-					_, _ = s.ChannelMessageSend(m.ChannelID, "There was an error trying to get the distance.")
-				}
-			} else {
-				_, _ = s.ChannelMessageSend(m.ChannelID, "Please give ma two places, format: distance **A** / **B**")
-			}
-			break
-		case "ping":
-			_, _ = s.ChannelMessageSend(m.ChannelID, "Pong!")
-			break
-		case "pong":
-			_, _ = s.ChannelMessageSend(m.ChannelID, "Ping!")
-			break
-		case "plugin":
-			//plugin := plugins.Plugin{Name: "EDSM Plugin", Description: "Elite Dangerous System Mapping"}
-			_, _ = s.ChannelMessageSend(m.ChannelID, client.GetHelpText())
-			break
-		default:
-			_, _ = s.ChannelMessageSend(m.ChannelID, "What?! I dont know what you mean...")
-		}
-	}
-
-	//
 }

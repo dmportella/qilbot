@@ -1,9 +1,9 @@
 package edsm
 
 import (
-	"encoding/json"
 	"errors"
 	"fmt"
+	"github.com/dmportella/qilbot/utilities"
 	"io/ioutil"
 	"math"
 	"net/http"
@@ -42,17 +42,7 @@ func getSystem(systemName string) (system System, err error) {
 
 	body, err := ioutil.ReadAll(res.Body)
 
-	err = fromJson(body, &system)
+	err = utilities.FromJson(body, &system)
 
 	return
-}
-
-func fromJson(data []byte, v interface{}) error {
-	err := json.Unmarshal(data, v)
-	if err != nil {
-		fmt.Println(err)
-		return errors.New("json decoding error.")
-	}
-
-	return nil
 }
