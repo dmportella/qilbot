@@ -20,8 +20,19 @@ Qilbot is a discord bot written in `GOLANG`.
 ### Running Qilbot
 
 * TODO: https://discordapp.com/oauth2/authorize?client_id=appid&scope=bot&permissions=0
-
 ```
+Distributions to add to build process.
+
+darwin/386
+darwin/amd64
+freebsd/386
+freebsd/amd64
+linux/386
+linux/amd64
+linux/arm
+windows/386
+windows/amd64
+`````
 .
 ├── bot
 │   ├── plugin_func.go
