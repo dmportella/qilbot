@@ -1,6 +1,7 @@
 package common
 
 import (
+	"fmt"
 	"github.com/bwmarrin/discordgo"
 	"github.com/dmportella/qilbot/bot"
 	"github.com/dmportella/qilbot/utilities"
@@ -37,7 +38,12 @@ func (self *CommonPlugin) messageCreate(s *discordgo.Session, m *discordgo.Messa
 
 			break
 		case "help":
-			_, _ = s.ChannelMessageSend(m.ChannelID, "TODO: list commands in all plugins")
+			_, _ = s.ChannelMessageSend(m.ChannelID, "List of Commands available to Qilbot.")
+			for _, plugin := range self.Plugin.Qilbot.Plugins {
+				for _, command := range plugin.GetCommands() {
+					_, _ = s.ChannelMessageSend(m.ChannelID, fmt.Sprintf("**%s** (%s): %s", command.Command, command.Template, command.Description))
+				}
+			}
 			break
 		default:
 			return
