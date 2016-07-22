@@ -5,7 +5,7 @@ import (
 )
 
 const (
-	DISTANCE_COMMAND_REGEX = `^<@([0-9]+)>\s([a-z]+)\s?(.*)`
+	DISTANCE_COMMAND_REGEX = `^(.*)\s?\/\s?(.*)`
 )
 
 // Regex that matches commands like:

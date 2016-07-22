@@ -25,7 +25,7 @@ func New(config *QilbotConfig) (bot *Qilbot, err error) {
 		bot.BotID = u.ID
 	}
 
-	bot.plugins = []*IPlugin{}
+	bot.Plugins = []IPlugin{}
 
 	return
 }
@@ -46,11 +46,17 @@ func (self *Qilbot) Stop() {
 
 // Add a plugin to qilbot that will be initialised with a instance for the discord session.
 func (self *Qilbot) AddPlugin(plugin IPlugin) {
-	self.plugins = append(self.plugins, &plugin)
+	self.Plugins = append(self.Plugins, plugin)
+
+	logging.Info.Println(plugin.GetHelpText())
 
 	plugin.Initialize(self)
 }
 
 func (self *Qilbot) AddHandler(handler interface{}) {
 	self.session.AddHandler(handler)
+}
+
+func (self *Qilbot) IsBot(id string) bool {
+	return id == self.BotID
 }

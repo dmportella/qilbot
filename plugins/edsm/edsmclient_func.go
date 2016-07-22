@@ -16,7 +16,19 @@ const (
 )
 
 func New() EDSMPlugin {
-	return EDSMPlugin{bot.Plugin{Name: NAME, Description: DESCRIPTION}}
+	return EDSMPlugin{
+		bot.Plugin{
+			Name:        NAME,
+			Description: DESCRIPTION,
+			Commands: []bot.CommandInformation{
+				bot.CommandInformation{
+					Command:     "distance",
+					Template:    "distance **sys1** / **sys2**",
+					Description: "Uses the coords in EDSM to calculate the distance between the two star systems.",
+				},
+			},
+		},
+	}
 }
 
 func (self *EDSMPlugin) GetDistanceBetweenTwoSystems(systemName1 string, systemName2 string) (distance float64, err error) {
@@ -39,24 +51,24 @@ func (self *EDSMPlugin) Initialize(qilbot *bot.Qilbot) {
 
 func (self *EDSMPlugin) messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 	// Ignore all messages created by the bot itself
-	if m.Author.ID == self.Plugin.Qilbot.BotID {
+	if self.Plugin.Qilbot.IsBot(m.Author.ID) {
 		return
 	}
 
 	matches := utilities.RegexMatchBotCommand(m.Content)
-	logging.Info.Println(matches)
-	if len(matches) >= 3 && matches[1] == self.Plugin.Qilbot.BotID {
+
+	if len(matches) >= 3 && self.Plugin.Qilbot.IsBot(matches[1]) {
 		switch matches[2] {
 		case "distance":
 			placeMatches := RegexMatchDistanceCommand(matches[3])
 
 			if len(placeMatches) >= 3 {
-				logging.Info.Println(placeMatches)
 				sys1 := strings.TrimSpace(placeMatches[1])
 				sys2 := strings.TrimSpace(placeMatches[2])
 				if distance, err := self.GetDistanceBetweenTwoSystems(sys1, sys2); err == nil {
-					_, _ = s.ChannelMessageSend(m.ChannelID, fmt.Sprintf("The distance between **%s** and **%s** is **%.2fly**.", placeMatches[1], placeMatches[2], distance))
+					_, _ = s.ChannelMessageSend(m.ChannelID, fmt.Sprintf("The distance between **%s** and **%s** is **%.2fly**.", sys1, sys2, distance))
 				} else {
+					logging.Warning.Println(err)
 					_, _ = s.ChannelMessageSend(m.ChannelID, "There was an error trying to get the distance.")
 				}
 			} else {

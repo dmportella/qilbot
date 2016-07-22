@@ -6,7 +6,7 @@ type Qilbot struct {
 	BotID   string
 	config  *QilbotConfig
 	session *discordgo.Session
-	plugins []*IPlugin
+	Plugins []IPlugin
 }
 
 type QilbotConfig struct {

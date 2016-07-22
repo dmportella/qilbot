@@ -16,9 +16,6 @@ func calculateDistance(sys1 *Coordinates, sys2 *Coordinates) float64 {
 	deltaY := sys1.Y - sys2.Y
 	deltaZ := sys1.Z - sys2.Z
 
-	fmt.Println(sys2)
-	fmt.Println(sys1)
-
 	return math.Sqrt(deltaX*deltaX + deltaY*deltaY + deltaZ*deltaZ)
 }
 
