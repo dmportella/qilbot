@@ -24,7 +24,7 @@ func getSystem(systemName string) (system System, err error) {
 
 	req, err := http.NewRequest("GET", url, nil)
 	req.Header.Add("accept", "application/json; charset=utf-8")
-	req.Header.Set("User-Agent", fmt.Sprintf("Qilbot a Discord Bot (https://github.com/dmportella/qilbot)"))
+	req.Header.Set("User-Agent", fmt.Sprintf("Discord Bot (https://github.com/dmportella/qilbot, 0.0.0)"))
 
 	client := &http.Client{Timeout: (20 * time.Second)}
 
