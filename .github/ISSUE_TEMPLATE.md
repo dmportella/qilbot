@@ -1,19 +1,22 @@
 Hello and Thank you opening an issue. Please note that I like to keep the qilbot issues tracker for bugs, feartures and feature requests.
 
-GoLang version: **1.5?**
+**GOLANG** version: **1.5?**
+
+**System OS**: linux?
 
 ##Qilbot version Info
 
-version: **0.0.0**
-branch: **master**
-revision: **c0ffee**
+* version: **0.0.0**
+* branch: **master**
+* revision: **c0ffee**
 
 ##Debug and Panic Output
 
 *Please Link to a gist.*
 
-Debug: [I'm an inline-style link](https://www.google.com)
-Panic: [I'm an inline-style link](https://www.google.com)
+Debug: [I'm an link to a debug log in gist](https://www.google.com)
+
+Panic: [I'm an link to a panic log in gist](https://www.google.com)
 
 ##Expected behavior
 
