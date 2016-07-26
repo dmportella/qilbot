@@ -32,7 +32,7 @@ linux/amd64
 linux/arm
 windows/386
 windows/amd64
-`````
+
 .
 ├── bot
 │   ├── plugin_func.go

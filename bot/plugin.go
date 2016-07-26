@@ -14,6 +14,7 @@ type CommandInformation struct {
 }
 
 type IPlugin interface {
+	GetCommands() []CommandInformation
 	GetHelpText() string
 	Initialize(qilbot *Qilbot)
 }

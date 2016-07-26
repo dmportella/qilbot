@@ -1,12 +1,14 @@
 package edsm
 
 import (
+	"bytes"
 	"errors"
 	"fmt"
 	"github.com/bwmarrin/discordgo"
 	"github.com/dmportella/qilbot/bot"
 	"github.com/dmportella/qilbot/logging"
 	"github.com/dmportella/qilbot/utilities"
+	"strconv"
 	"strings"
 )
 
@@ -26,6 +28,11 @@ func New() EDSMPlugin {
 					Template:    "distance **sys1** / **sys2**",
 					Description: "Uses the coords in EDSM to calculate the distance between the two star systems.",
 				},
+				bot.CommandInformation{
+					Command:     "sphere",
+					Template:    "sphere **sys1** 14.33ly",
+					Description: "Returns a list of systems near the given system.",
+				},
 			},
 		},
 	}
@@ -36,11 +43,31 @@ func (self *EDSMPlugin) GetDistanceBetweenTwoSystems(systemName1 string, systemN
 		if sys2, ok2 := getSystem(systemName2); ok2 == nil {
 			distance = calculateDistance(sys1.Coords, sys2.Coords)
 			return
+		} else {
+			logging.Info.Println(ok2)
 		}
+	} else {
+		logging.Info.Println(ok1)
 	}
 
 	err = errors.New("Unable to get distance between these systems.")
 
+	return
+}
+
+func (self *EDSMPlugin) GetSphereSystems(systemName1 string, distance string) (systems []System, err error) {
+	if value, ok1 := strconv.ParseFloat(distance, 64); ok1 == nil {
+		if sysList, ok2 := getSphereSystems(systemName1, value); ok2 == nil {
+			systems = sysList
+			return
+		} else {
+			logging.Trace.Println(ok2)
+		}
+	} else {
+		logging.Info.Println(ok1)
+	}
+
+	err = errors.New("Unable to get nearest systems.")
 	return
 }
 
@@ -60,23 +87,58 @@ func (self *EDSMPlugin) messageCreate(s *discordgo.Session, m *discordgo.Message
 	if len(matches) >= 3 && self.Plugin.Qilbot.IsBot(matches[1]) {
 		switch matches[2] {
 		case "distance":
-			placeMatches := RegexMatchDistanceCommand(matches[3])
-
-			if len(placeMatches) >= 3 {
-				sys1 := strings.TrimSpace(placeMatches[1])
-				sys2 := strings.TrimSpace(placeMatches[2])
-				if distance, err := self.GetDistanceBetweenTwoSystems(sys1, sys2); err == nil {
-					_, _ = s.ChannelMessageSend(m.ChannelID, fmt.Sprintf("The distance between **%s** and **%s** is **%.2fly**.", sys1, sys2, distance))
-				} else {
-					logging.Warning.Println(err)
-					_, _ = s.ChannelMessageSend(m.ChannelID, "There was an error trying to get the distance.")
-				}
-			} else {
-				_, _ = s.ChannelMessageSend(m.ChannelID, "Please give me two places, format: distance **A** / **B**")
-			}
+			self.displayDistance(s, m, matches[3])
 			break
+		case "sphere":
+			self.displaySphere(s, m, matches[3])
 		default:
 			return
 		}
+	}
+}
+
+func (self *EDSMPlugin) displaySphere(s *discordgo.Session, m *discordgo.MessageCreate, commandText string) {
+	placeMatches := RegexMatchSphereCommand(commandText)
+
+	if len(placeMatches) >= 3 {
+		sys1 := strings.TrimSpace(placeMatches[1])
+		distance := strings.TrimSpace(placeMatches[2])
+
+		s.ChannelTyping(m.ChannelID)
+
+		if systems, err := self.GetSphereSystems(sys1, distance); err == nil {
+			var buffer bytes.Buffer
+
+			buffer.WriteString(fmt.Sprintf("Number of Systems found: %d\n", len(systems)))
+			buffer.WriteString("TODO: Calculate Distance in Light years.\n")
+
+			for _, sys := range systems {
+				buffer.WriteString(fmt.Sprintf("**%s** coords %f, %f, %f\n", sys.Name, sys.Coords.X, sys.Coords.Y, sys.Coords.Z))
+			}
+			_, _ = s.ChannelMessageSend(m.ChannelID, buffer.String())
+
+		} else {
+			_, _ = s.ChannelMessageSend(m.ChannelID, "There was an error trying to get the distance.")
+		}
+	}
+}
+
+func (self *EDSMPlugin) displayDistance(s *discordgo.Session, m *discordgo.MessageCreate, commandText string) {
+	placeMatches := RegexMatchDistanceCommand(commandText)
+
+	if len(placeMatches) >= 3 {
+		sys1 := strings.TrimSpace(placeMatches[1])
+		sys2 := strings.TrimSpace(placeMatches[2])
+
+		s.ChannelTyping(m.ChannelID)
+
+		if distance, err := self.GetDistanceBetweenTwoSystems(sys1, sys2); err == nil {
+			_, _ = s.ChannelMessageSend(m.ChannelID, fmt.Sprintf("The distance between **%s** and **%s** is **%.2fly**.", sys1, sys2, distance))
+		} else {
+			logging.Warning.Println(err)
+			_, _ = s.ChannelMessageSend(m.ChannelID, "There was an error trying to get the distance.")
+		}
+	} else {
+		_, _ = s.ChannelMessageSend(m.ChannelID, "Please give me two places, format: distance **A** / **B**")
 	}
 }

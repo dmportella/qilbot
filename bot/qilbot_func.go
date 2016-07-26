@@ -41,7 +41,7 @@ func (self *Qilbot) Start() (err error) {
 }
 
 func (self *Qilbot) Stop() {
-
+	// discordgo package doesnt seem to have any close or stop functionality.
 }
 
 // Add a plugin to qilbot that will be initialised with a instance for the discord session.
@@ -53,10 +53,12 @@ func (self *Qilbot) AddPlugin(plugin IPlugin) {
 	plugin.Initialize(self)
 }
 
+// Adds an event handler for discord events
 func (self *Qilbot) AddHandler(handler interface{}) {
 	self.session.AddHandler(handler)
 }
 
+// Simple check to see if the an ID matches the bot id.
 func (self *Qilbot) IsBot(id string) bool {
 	return id == self.BotID
 }
