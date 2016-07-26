@@ -31,7 +31,7 @@ func New() EDSMPlugin {
 				bot.CommandInformation{
 					Command:     "sphere",
 					Template:    "sphere **sys1** 14.33ly",
-					Description: "Returns a list of systems near the given system.",
+					Description: "Returns a list of systems within a specified distance to specified system.",
 				},
 			},
 		},
