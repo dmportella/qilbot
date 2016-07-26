@@ -100,25 +100,32 @@ func (self *EDSMPlugin) messageCreate(s *discordgo.Session, m *discordgo.Message
 func (self *EDSMPlugin) displaySphere(s *discordgo.Session, m *discordgo.MessageCreate, commandText string) {
 	placeMatches := RegexMatchSphereCommand(commandText)
 
+	logging.Trace.Println(placeMatches)
+
 	if len(placeMatches) >= 3 {
-		sys1 := strings.TrimSpace(placeMatches[1])
+		systemName := strings.TrimSpace(placeMatches[1])
 		distance := strings.TrimSpace(placeMatches[2])
 
 		s.ChannelTyping(m.ChannelID)
 
-		if systems, err := self.GetSphereSystems(sys1, distance); err == nil {
-			var buffer bytes.Buffer
+		if sys1, ok1 := getSystem(systemName); ok1 == nil {
+			if systems, err := self.GetSphereSystems(sys1.Name, distance); err == nil {
+				var buffer bytes.Buffer
 
-			buffer.WriteString(fmt.Sprintf("Number of Systems found: %d\n", len(systems)))
-			buffer.WriteString("TODO: Calculate Distance in Light years.\n")
+				buffer.WriteString(fmt.Sprintf("Number of Systems found near **%s** within **%sly**: %d\n", sys1.Name, distance, len(systems)-1))
+				buffer.WriteString("```\n")
+				for _, sys2 := range systems {
+					if sys2.Name == sys1.Name {
+						continue
+					}
+					buffer.WriteString(fmt.Sprintf("%-30s\t\t\t\t%9.2fly\n", sys2.Name, calculateDistance(sys1.Coords, sys2.Coords)))
+				}
+				buffer.WriteString("```")
+				_, _ = s.ChannelMessageSend(m.ChannelID, buffer.String())
 
-			for _, sys := range systems {
-				buffer.WriteString(fmt.Sprintf("**%s** coords %f, %f, %f\n", sys.Name, sys.Coords.X, sys.Coords.Y, sys.Coords.Z))
+			} else {
+				_, _ = s.ChannelMessageSend(m.ChannelID, "There was an error trying to get the distance.")
 			}
-			_, _ = s.ChannelMessageSend(m.ChannelID, buffer.String())
-
-		} else {
-			_, _ = s.ChannelMessageSend(m.ChannelID, "There was an error trying to get the distance.")
 		}
 	}
 }

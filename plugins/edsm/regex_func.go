@@ -6,7 +6,7 @@ import (
 
 const (
 	DISTANCE_COMMAND_REGEX = `^(.*)\s?\/\s?(.*)`
-	SPHERE_COMMAND_REGEX   = `^(.*)\s+?([0-9]+.?[0-9]+)\s?l?[y|s]?`
+	SPHERE_COMMAND_REGEX   = `^(.*)\s+?(\d*\.?\d*)`
 )
 
 // Regex that matches commands like:
