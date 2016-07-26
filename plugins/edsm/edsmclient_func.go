@@ -112,7 +112,7 @@ func (self *EDSMPlugin) displaySphere(s *discordgo.Session, m *discordgo.Message
 			if systems, err := self.GetSphereSystems(sys1.Name, distance); err == nil {
 				var buffer bytes.Buffer
 
-				buffer.WriteString(fmt.Sprintf("Number of Systems found near **%s** within **%sly**: %d\n", sys1.Name, distance, len(systems)-1))
+				buffer.WriteString(fmt.Sprintf("Found **%d** systems within **%sly** of **%s**.\n", len(systems)-1, distance, sys1.Name))
 				buffer.WriteString("```\n")
 				for _, sys2 := range systems {
 					if sys2.Name == sys1.Name {
