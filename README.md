@@ -4,7 +4,7 @@ Qilbot is a discord bot written in `GOLANG`.
 
 @dmportella
 
-[![GitHub License](https://img.shields.io/packagist/l/doctrine/orm.svg?maxAge=2592000)](https://github.com/dmportella/qilbot)[![Build Status](https://travis-ci.org/dmportella/qilbot.svg?branch=master)](https://travis-ci.org/dmportella/qilbot)[![GoDoc](https://godoc.org/github.com/dmportella/qilbot?status.svg)](https://godoc.org/github.com/dmportella/qilbot)
+[![Build Status](https://travis-ci.org/dmportella/qilbot.svg?branch=master)](https://travis-ci.org/dmportella/qilbot)[![GoDoc](https://godoc.org/github.com/dmportella/qilbot?status.svg)](https://godoc.org/github.com/dmportella/qilbot)
 
 ## Installing Qilbot
 
