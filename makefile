@@ -35,6 +35,9 @@ build: version test
 	@echo "GO BUILD..."
 	@go build -ldflags "-X main.Build=${VERSION} -X main.Revision=${REV} -X main.Branch=${BRANCH}" -v -o qilbot .
 
+crosscompile:
+	@go build -ldflags "-X main.Build=${VERSION} -X main.Revision=${REV} -X main.Branch=${BRANCH}" -v -o qilbot .
+
 lint:
 	@echo "GO LINT..."
 	@golint
