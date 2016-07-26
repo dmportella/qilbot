@@ -19,7 +19,7 @@ import (
 )
 
 // VERSION of Discordgo, follows Symantic Versioning. (http://semver.org/)
-const VERSION = "0.12.1"
+const VERSION = "0.14.0-dev"
 
 // New creates a new Discord session and will automate some startup
 // tasks if given enough information to do so.  Currently you can pass zero
@@ -40,6 +40,8 @@ func New(args ...interface{}) (s *Session, err error) {
 		StateEnabled:           true,
 		Compress:               true,
 		ShouldReconnectOnError: true,
+		ShardID:                0,
+		ShardCount:             1,
 	}
 
 	// If no arguments are passed return the empty Session interface.
@@ -205,19 +207,21 @@ func (s *Session) handle(event interface{}) {
 
 	if handlers, ok := s.handlers[nil]; ok {
 		for _, handler := range handlers {
-			handler.Call(handlerParameters)
+			go handler.Call(handlerParameters)
 		}
 	}
 
 	if handlers, ok := s.handlers[reflect.TypeOf(event)]; ok {
 		for _, handler := range handlers {
-			handler.Call(handlerParameters)
+			go handler.Call(handlerParameters)
 		}
 	}
 }
 
 // initialize adds all internal handlers and state tracking handlers.
 func (s *Session) initialize() {
+
+	s.log(LogInformational, "called")
 
 	s.handlersMu.Lock()
 	if s.handlers != nil {
@@ -229,6 +233,7 @@ func (s *Session) initialize() {
 	s.handlersMu.Unlock()
 
 	s.AddHandler(s.onReady)
+	s.AddHandler(s.onResumed)
 	s.AddHandler(s.onVoiceServerUpdate)
 	s.AddHandler(s.onVoiceStateUpdate)
 	s.AddHandler(s.State.onInterface)
@@ -237,5 +242,16 @@ func (s *Session) initialize() {
 // onReady handles the ready event.
 func (s *Session) onReady(se *Session, r *Ready) {
 
+	// Store the SessionID within the Session struct.
+	s.sessionID = r.SessionID
+
+	// Start the heartbeat to keep the connection alive.
+	go s.heartbeat(s.wsConn, s.listening, r.HeartbeatInterval)
+}
+
+// onResumed handles the resumed event.
+func (s *Session) onResumed(se *Session, r *Resumed) {
+
+	// Start the heartbeat to keep the connection alive.
 	go s.heartbeat(s.wsConn, s.listening, r.HeartbeatInterval)
 }

@@ -44,10 +44,10 @@ func (self *EDSMPlugin) GetDistanceBetweenTwoSystems(systemName1 string, systemN
 			distance = calculateDistance(sys1.Coords, sys2.Coords)
 			return
 		} else {
-			logging.Info.Println(ok2)
+			logging.Trace.Println(ok2)
 		}
 	} else {
-		logging.Info.Println(ok1)
+		logging.Trace.Println(ok1)
 	}
 
 	err = errors.New("Unable to get distance between these systems.")
@@ -64,7 +64,7 @@ func (self *EDSMPlugin) GetSphereSystems(systemName1 string, distance string) (s
 			logging.Trace.Println(ok2)
 		}
 	} else {
-		logging.Info.Println(ok1)
+		logging.Trace.Println(ok1)
 	}
 
 	err = errors.New("Unable to get nearest systems.")
@@ -106,26 +106,47 @@ func (self *EDSMPlugin) displaySphere(s *discordgo.Session, m *discordgo.Message
 		systemName := strings.TrimSpace(placeMatches[1])
 		distance := strings.TrimSpace(placeMatches[2])
 
+		logging.Trace.Println("systemname", systemName, "distance", distance)
+
 		s.ChannelTyping(m.ChannelID)
 
 		if sys1, ok1 := getSystem(systemName); ok1 == nil {
-			if systems, err := self.GetSphereSystems(sys1.Name, distance); err == nil {
+			if systems, ok2 := self.GetSphereSystems(sys1.Name, distance); ok2 == nil {
 				var buffer bytes.Buffer
 
-				buffer.WriteString(fmt.Sprintf("Found **%d** systems within **%sly** of **%s**.\n", len(systems)-1, distance, sys1.Name))
-				buffer.WriteString("```\n")
+				header := fmt.Sprintf("Found **%d** systems within **%sly** of **%s**.\r\n", len(systems)-1, distance, sys1.Name)
+
+				buffer.WriteString(header)
+
+				buffer.Write([]byte("```\r\n"))
+
 				for _, sys2 := range systems {
 					if sys2.Name == sys1.Name {
 						continue
 					}
-					buffer.WriteString(fmt.Sprintf("%-30s\t\t\t\t%9.2fly\n", sys2.Name, calculateDistance(sys1.Coords, sys2.Coords)))
-				}
-				buffer.WriteString("```")
-				_, _ = s.ChannelMessageSend(m.ChannelID, buffer.String())
 
+					fmt.Fprintf(&buffer, "%-30s\t\t\t\t%9.2fly\r\n", sys2.Name, calculateDistance(sys1.Coords, sys2.Coords))
+				}
+
+				buffer.Write([]byte("```\r\n"))
+
+				if buffer.Len() > 8388608 {
+					logging.Trace.Println("msg large", buffer.Len())
+
+					_, _ = s.ChannelMessageSend(m.ChannelID, "Response is too large for discord please narrow you search.")
+				} else if buffer.Len() > 2000 {
+					logging.Trace.Println("msg attach", buffer.Len())
+					reader := bytes.NewReader(buffer.Bytes())
+					_, _ = s.ChannelFileSendWithMessage(m.ChannelID, header, "Results.txt", reader)
+				} else {
+					logging.Trace.Println("msg oke", buffer.Len())
+					_, _ = s.ChannelMessageSend(m.ChannelID, buffer.String())
+				}
 			} else {
-				_, _ = s.ChannelMessageSend(m.ChannelID, "There was an error trying to get the distance.")
+				_, _ = s.ChannelMessageSend(m.ChannelID, ok2.Error())
 			}
+		} else {
+			_, _ = s.ChannelMessageSend(m.ChannelID, ok1.Error())
 		}
 	}
 }

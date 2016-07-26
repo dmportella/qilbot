@@ -2,7 +2,7 @@ package edsm
 
 // Simple representation of a system object as detailed by edsm
 type System struct {
-	ID     int64        `json:"id"`
+	ID     string       `json:"id"`
 	Name   string       `json:"name"`
 	Coords *Coordinates `json:"coords"`
 }
