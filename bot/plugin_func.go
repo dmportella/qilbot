@@ -2,10 +2,12 @@ package bot
 
 import "fmt"
 
-func (self *Plugin) GetHelpText() (msg string) {
-	return fmt.Sprintf("Plugin **%s**, Description: *%s*", self.Name, self.Description)
+// GetHelpText generic implemetation for help text.
+func (plugin *Plugin) GetHelpText() (msg string) {
+	return fmt.Sprintf("Plugin **%s**, Description: *%s*", plugin.Name, plugin.Description)
 }
 
-func (self *Plugin) GetCommands() []CommandInformation {
-	return self.Commands
+// GetCommands generic implementation for getting commands.
+func (plugin *Plugin) GetCommands() []CommandInformation {
+	return plugin.Commands
 }

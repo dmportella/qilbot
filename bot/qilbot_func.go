@@ -5,6 +5,7 @@ import (
 	"github.com/dmportella/qilbot/logging"
 )
 
+// New creates a new instance of Qilbot
 func New(config *QilbotConfig) (bot *Qilbot, err error) {
 	bot = &Qilbot{config: config}
 
@@ -30,35 +31,36 @@ func New(config *QilbotConfig) (bot *Qilbot, err error) {
 	return
 }
 
-// Opens a WebSocket connection with discord.
-func (self *Qilbot) Start() (err error) {
+// Start Opens a WebSocket connection with discord.
+func (qilbot *Qilbot) Start() (err error) {
 	// Open the websocket and begin listening.
-	if ok := self.session.Open(); ok != nil {
+	if ok := qilbot.session.Open(); ok != nil {
 		logging.Error.Println("error opening connection,", err)
 		err = ok
 	}
 	return
 }
 
-func (self *Qilbot) Stop() {
-	// discordgo package doesnt seem to have any close or stop functionality.
+// Stop not implemented
+func (qilbot *Qilbot) Stop() {
+	// discordgo package doesn't seem to have any close or stop functionality.
 }
 
-// Add a plugin to qilbot that will be initialised with a instance for the discord session.
-func (self *Qilbot) AddPlugin(plugin IPlugin) {
-	self.Plugins = append(self.Plugins, plugin)
+// AddPlugin Add a plugin to qilbot that will be initialised with a instance for the discord session.
+func (qilbot *Qilbot) AddPlugin(plugin IPlugin) {
+	qilbot.Plugins = append(qilbot.Plugins, plugin)
 
 	logging.Info.Println(plugin.GetHelpText())
 
-	plugin.Initialize(self)
+	plugin.Initialize(qilbot)
 }
 
-// Adds an event handler for discord events
-func (self *Qilbot) AddHandler(handler interface{}) {
-	self.session.AddHandler(handler)
+// AddHandler Adds an event handler for discord events
+func (qilbot *Qilbot) AddHandler(handler interface{}) {
+	qilbot.session.AddHandler(handler)
 }
 
-// Simple check to see if the an ID matches the bot id.
-func (self *Qilbot) IsBot(id string) bool {
-	return id == self.BotID
+// IsBot Simple check to see if the an ID matches the bot id.
+func (qilbot *Qilbot) IsBot(id string) bool {
+	return id == qilbot.BotID
 }

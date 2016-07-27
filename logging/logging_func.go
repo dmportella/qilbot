@@ -9,6 +9,7 @@ var (
 	initRun = false
 )
 
+// Init initialises the log writers for qilbot.
 func Init(traceHandle io.Writer, infoHandle io.Writer, warningHandle io.Writer, errorHandle io.Writer) {
 	initRun = true
 

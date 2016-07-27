@@ -8,16 +8,16 @@ import (
 	"github.com/dmportella/qilbot/utilities"
 )
 
-const (
-	NAME        = "Qilbot Common plugin"
-	DESCRIPTION = "Common plugin for qibot a a place for generic commands."
-)
-
+// New creates a new instance of Common Plugin.
 func New() CommonPlugin {
+	const (
+		Name        = "Qilbot Common plugin"
+		Description = "Common plugin for qibot a a place for generic commands."
+	)
 	return CommonPlugin{
 		bot.Plugin{
-			Name:        NAME,
-			Description: DESCRIPTION,
+			Name:        Name,
+			Description: Description,
 			Commands: []bot.CommandInformation{
 				{
 					Command:     "plugins",
@@ -34,26 +34,27 @@ func New() CommonPlugin {
 	}
 }
 
-func (self *CommonPlugin) Initialize(qilbot *bot.Qilbot) {
-	self.Qilbot = qilbot
-	qilbot.AddHandler(self.messageCreate)
+// Initialize the init method for the common plugin
+func (plugin *CommonPlugin) Initialize(qilbot *bot.Qilbot) {
+	plugin.Qilbot = qilbot
+	qilbot.AddHandler(plugin.messageCreate)
 }
 
-func (self *CommonPlugin) messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
+func (plugin *CommonPlugin) messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 	// Ignore all messages created by the bot itself
-	if self.Plugin.Qilbot.IsBot(m.Author.ID) {
+	if plugin.Plugin.Qilbot.IsBot(m.Author.ID) {
 		return
 	}
 
 	matches := utilities.RegexMatchBotCommand(m.Content)
 
-	if len(matches) >= 3 && self.Plugin.Qilbot.IsBot(matches[1]) {
+	if len(matches) >= 3 && plugin.Plugin.Qilbot.IsBot(matches[1]) {
 		switch matches[2] {
 		case "plugins":
-			self.displayPluginList(s, m)
+			plugin.displayPluginList(s, m)
 			break
 		case "help":
-			self.displayHelp(s, m)
+			plugin.displayHelp(s, m)
 			break
 		default:
 			return
@@ -61,19 +62,19 @@ func (self *CommonPlugin) messageCreate(s *discordgo.Session, m *discordgo.Messa
 	}
 }
 
-func (self *CommonPlugin) displayPluginList(s *discordgo.Session, m *discordgo.MessageCreate) {
+func (plugin *CommonPlugin) displayPluginList(s *discordgo.Session, m *discordgo.MessageCreate) {
 	var buffer bytes.Buffer
-	for _, plugin := range self.Plugin.Qilbot.Plugins {
-		buffer.WriteString(plugin.GetHelpText() + "\n")
+	for _, item := range plugin.Plugin.Qilbot.Plugins {
+		buffer.WriteString(item.GetHelpText() + "\n")
 	}
 	_, _ = s.ChannelMessageSend(m.ChannelID, buffer.String())
 }
 
-func (self *CommonPlugin) displayHelp(s *discordgo.Session, m *discordgo.MessageCreate) {
+func (plugin *CommonPlugin) displayHelp(s *discordgo.Session, m *discordgo.MessageCreate) {
 	var buffer bytes.Buffer
 	buffer.WriteString("List of Commands available to Qilbot.\n")
-	for _, plugin := range self.Plugin.Qilbot.Plugins {
-		for _, command := range plugin.GetCommands() {
+	for _, item := range plugin.Plugin.Qilbot.Plugins {
+		for _, command := range item.GetCommands() {
 			buffer.WriteString(fmt.Sprintf("**%s** (%s): %s\n", command.Command, command.Template, command.Description))
 
 		}

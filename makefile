@@ -40,7 +40,9 @@ crosscompile:
 
 lint:
 	@echo "GO LINT..."
-	@golint
+	@for pkg in $$(go list ./... |grep -v /vendor/) ; do \
+        golint -set_exit_status $$pkg ; \
+    done
 
 test: fmt generate lint vet
 	@echo "GO TEST..."

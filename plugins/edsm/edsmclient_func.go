@@ -12,16 +12,16 @@ import (
 	"strings"
 )
 
-const (
-	NAME        = "EDSM Plugin"
-	DESCRIPTION = "Client plugin for Elite Dangerous Star Map web site."
-)
-
+// New creates a new instance of EDSMPlugin.
 func New() EDSMPlugin {
+	const (
+		Name        = "EDSM Plugin"
+		Description = "Client plugin for Elite Dangerous Star Map web site."
+	)
 	return EDSMPlugin{
 		bot.Plugin{
-			Name:        NAME,
-			Description: DESCRIPTION,
+			Name:        Name,
+			Description: Description,
 			Commands: []bot.CommandInformation{
 				{
 					Command:     "distance",
@@ -38,67 +38,75 @@ func New() EDSMPlugin {
 	}
 }
 
-func (self *EDSMPlugin) GetDistanceBetweenTwoSystems(systemName1 string, systemName2 string) (distance float64, err error) {
+func (plugin *EDSMPlugin) getDistanceBetweenTwoSystems(systemName1 string, systemName2 string) (distance float64, err error) {
 	if sys1, ok1 := getSystem(systemName1); ok1 == nil {
 		if sys2, ok2 := getSystem(systemName2); ok2 == nil {
 			distance = calculateDistance(sys1.Coords, sys2.Coords)
-			return
 		} else {
 			logging.Trace.Println(ok2)
+			err = ok2
 		}
 	} else {
 		logging.Trace.Println(ok1)
+		err = ok1
 	}
 
-	err = errors.New("Unable to get distance between these systems.")
+	if err != nil {
+		err = errors.New("Unable to get distance between these systems.")
+	}
 
 	return
 }
 
-func (self *EDSMPlugin) GetSphereSystems(systemName1 string, distance string) (systems []System, err error) {
+func (plugin *EDSMPlugin) getSphereSystems(systemName1 string, distance string) (systems []System, err error) {
 	if value, ok1 := strconv.ParseFloat(distance, 64); ok1 == nil {
 		if sysList, ok2 := getSphereSystems(systemName1, value); ok2 == nil {
 			systems = sysList
-			return
 		} else {
 			logging.Trace.Println(ok2)
+			err = ok2
 		}
 	} else {
 		logging.Trace.Println(ok1)
+		err = ok1
 	}
 
-	err = errors.New("Unable to get nearest systems.")
+	if err != nil {
+		err = errors.New("Unable to get nearest systems.")
+	}
+
 	return
 }
 
-func (self *EDSMPlugin) Initialize(qilbot *bot.Qilbot) {
-	self.Qilbot = qilbot
-	qilbot.AddHandler(self.messageCreate)
+// Initialize the init for EDSMPlugin.
+func (plugin *EDSMPlugin) Initialize(qilbot *bot.Qilbot) {
+	plugin.Qilbot = qilbot
+	qilbot.AddHandler(plugin.messageCreate)
 }
 
-func (self *EDSMPlugin) messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
+func (plugin *EDSMPlugin) messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 	// Ignore all messages created by the bot itself
-	if self.Plugin.Qilbot.IsBot(m.Author.ID) {
+	if plugin.Plugin.Qilbot.IsBot(m.Author.ID) {
 		return
 	}
 
 	matches := utilities.RegexMatchBotCommand(m.Content)
 
-	if len(matches) >= 3 && self.Plugin.Qilbot.IsBot(matches[1]) {
+	if len(matches) >= 3 && plugin.Plugin.Qilbot.IsBot(matches[1]) {
 		switch matches[2] {
 		case "distance":
-			self.displayDistance(s, m, matches[3])
+			plugin.displayDistance(s, m, matches[3])
 			break
 		case "sphere":
-			self.displaySphere(s, m, matches[3])
+			plugin.displaySphere(s, m, matches[3])
 		default:
 			return
 		}
 	}
 }
 
-func (self *EDSMPlugin) displaySphere(s *discordgo.Session, m *discordgo.MessageCreate, commandText string) {
-	placeMatches := RegexMatchSphereCommand(commandText)
+func (plugin *EDSMPlugin) displaySphere(s *discordgo.Session, m *discordgo.MessageCreate, commandText string) {
+	placeMatches := regexMatchSphereCommand(commandText)
 
 	logging.Trace.Println(placeMatches)
 
@@ -111,7 +119,7 @@ func (self *EDSMPlugin) displaySphere(s *discordgo.Session, m *discordgo.Message
 		s.ChannelTyping(m.ChannelID)
 
 		if sys1, ok1 := getSystem(systemName); ok1 == nil {
-			if systems, ok2 := self.GetSphereSystems(sys1.Name, distance); ok2 == nil {
+			if systems, ok2 := plugin.getSphereSystems(sys1.Name, distance); ok2 == nil {
 				var buffer bytes.Buffer
 
 				header := fmt.Sprintf("Found **%d** systems within **%sly** of **%s**.\r\n", len(systems)-1, distance, sys1.Name)
@@ -151,8 +159,8 @@ func (self *EDSMPlugin) displaySphere(s *discordgo.Session, m *discordgo.Message
 	}
 }
 
-func (self *EDSMPlugin) displayDistance(s *discordgo.Session, m *discordgo.MessageCreate, commandText string) {
-	placeMatches := RegexMatchDistanceCommand(commandText)
+func (plugin *EDSMPlugin) displayDistance(s *discordgo.Session, m *discordgo.MessageCreate, commandText string) {
+	placeMatches := regexMatchDistanceCommand(commandText)
 
 	if len(placeMatches) >= 3 {
 		sys1 := strings.TrimSpace(placeMatches[1])
@@ -160,7 +168,7 @@ func (self *EDSMPlugin) displayDistance(s *discordgo.Session, m *discordgo.Messa
 
 		s.ChannelTyping(m.ChannelID)
 
-		if distance, err := self.GetDistanceBetweenTwoSystems(sys1, sys2); err == nil {
+		if distance, err := plugin.getDistanceBetweenTwoSystems(sys1, sys2); err == nil {
 			_, _ = s.ChannelMessageSend(m.ChannelID, fmt.Sprintf("The distance between **%s** and **%s** is **%.2fly**.", sys1, sys2, distance))
 		} else {
 			logging.Warning.Println(err)

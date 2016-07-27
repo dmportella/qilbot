@@ -38,13 +38,13 @@ func getSphereSystems(systemName string, radius float64) (systems []System, err 
 
 	if err != nil {
 		logging.Trace.Println("Request error", err)
-		err = errors.New("could not retrieve system information.")
+		err = errors.New("could not retrieve system information")
 		return
 	}
 
 	body, err := ioutil.ReadAll(res.Body)
 
-	err = utilities.FromJson(body, &systems)
+	err = utilities.FromJSON(body, &systems)
 
 	logging.Trace.Println("systems found", len(systems))
 
@@ -65,13 +65,13 @@ func getSystem(systemName string) (system System, err error) {
 	defer res.Body.Close()
 
 	if err != nil {
-		err = errors.New("could not retrieve system information.")
+		err = errors.New("could not retrieve system information")
 		return
 	}
 
 	body, err := ioutil.ReadAll(res.Body)
 
-	err = utilities.FromJson(body, &system)
+	err = utilities.FromJSON(body, &system)
 
 	return
 }
