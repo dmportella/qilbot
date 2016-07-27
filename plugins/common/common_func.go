@@ -19,12 +19,12 @@ func New() CommonPlugin {
 			Name:        NAME,
 			Description: DESCRIPTION,
 			Commands: []bot.CommandInformation{
-				bot.CommandInformation{
+				{
 					Command:     "plugins",
 					Template:    "plugins",
 					Description: "Display a list of plugins enabled on qilbot.",
 				},
-				bot.CommandInformation{
+				{
 					Command:     "help",
 					Template:    "help",
 					Description: "Display a list of commands available to qilbot.",

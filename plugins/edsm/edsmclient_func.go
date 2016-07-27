@@ -23,12 +23,12 @@ func New() EDSMPlugin {
 			Name:        NAME,
 			Description: DESCRIPTION,
 			Commands: []bot.CommandInformation{
-				bot.CommandInformation{
+				{
 					Command:     "distance",
 					Template:    "distance **sys1** / **sys2**",
 					Description: "Uses the coords in EDSM to calculate the distance between the two star systems.",
 				},
-				bot.CommandInformation{
+				{
 					Command:     "sphere",
 					Template:    "sphere **sys1** 14.33ly",
 					Description: "Returns a list of systems within a specified distance to specified system.",

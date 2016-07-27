@@ -72,6 +72,6 @@ vet:
 
 fmt:
 	@echo "GO FMT..."
-	@gofmt -w $(GOFMT_FILES)
+	@gofmt -w -s $(GOFMT_FILES)
 
 .PHONY: tools default
