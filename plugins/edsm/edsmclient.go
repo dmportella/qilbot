@@ -2,7 +2,7 @@ package edsm
 
 import "github.com/dmportella/qilbot/bot"
 
-// EDSMPlugin describes the edsm plugin for qilbot.
-type EDSMPlugin struct {
+// Plugin EDSM plugin instance for qilbot.
+type Plugin struct {
 	bot.Plugin
 }

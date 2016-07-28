@@ -9,12 +9,12 @@ import (
 )
 
 // New creates a new instance of Common Plugin.
-func New() CommonPlugin {
+func New() Plugin {
 	const (
 		Name        = "Qilbot Common plugin"
 		Description = "Common plugin for qibot a a place for generic commands."
 	)
-	return CommonPlugin{
+	return Plugin{
 		bot.Plugin{
 			Name:        Name,
 			Description: Description,
@@ -35,12 +35,12 @@ func New() CommonPlugin {
 }
 
 // Initialize the init method for the common plugin
-func (plugin *CommonPlugin) Initialize(qilbot *bot.Qilbot) {
+func (plugin *Plugin) Initialize(qilbot *bot.Qilbot) {
 	plugin.Qilbot = qilbot
 	qilbot.AddHandler(plugin.messageCreate)
 }
 
-func (plugin *CommonPlugin) messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
+func (plugin *Plugin) messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 	// Ignore all messages created by the bot itself
 	if plugin.Plugin.Qilbot.IsBot(m.Author.ID) {
 		return
@@ -62,7 +62,7 @@ func (plugin *CommonPlugin) messageCreate(s *discordgo.Session, m *discordgo.Mes
 	}
 }
 
-func (plugin *CommonPlugin) displayPluginList(s *discordgo.Session, m *discordgo.MessageCreate) {
+func (plugin *Plugin) displayPluginList(s *discordgo.Session, m *discordgo.MessageCreate) {
 	var buffer bytes.Buffer
 	for _, item := range plugin.Plugin.Qilbot.Plugins {
 		buffer.WriteString(item.GetHelpText() + "\n")
@@ -70,7 +70,7 @@ func (plugin *CommonPlugin) displayPluginList(s *discordgo.Session, m *discordgo
 	_, _ = s.ChannelMessageSend(m.ChannelID, buffer.String())
 }
 
-func (plugin *CommonPlugin) displayHelp(s *discordgo.Session, m *discordgo.MessageCreate) {
+func (plugin *Plugin) displayHelp(s *discordgo.Session, m *discordgo.MessageCreate) {
 	var buffer bytes.Buffer
 	buffer.WriteString("List of Commands available to Qilbot.\n")
 	for _, item := range plugin.Plugin.Qilbot.Plugins {

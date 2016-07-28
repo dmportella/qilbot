@@ -16,6 +16,9 @@ commit:
 push:
 	@git push origin ${BRANCH}
 
+update:
+	@git pull origin ${BRANCH}
+
 version:
 	@echo "SOFTWARE VERSION"
 	@echo "\tbranch:\t\t" ${BRANCH}
