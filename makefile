@@ -35,16 +35,34 @@ tools:
 
 build: version test
 	@echo "GO BUILD..."
-	@go build -ldflags "-X main.Build=${VERSION} -X main.Revision=${REV} -X main.Branch=${BRANCH}" -v -o qilbot .
+	@go build -ldflags "-X main.Build=${VERSION} -X main.Revision=${REV} -X main.Branch=${BRANCH}" -v -o ./bin/qilbot .
 
-crosscompile:
-	
-	@for os in "darwin" "freebsd" "linux" "windows"; do \
-		for arch in "386" "amd64"; do \
-			GOOS=$$os GOARCH=$$arch go build -ldflags "-X main.Build=${VERSION} -X main.Revision=${REV} -X main.Branch=${BRANCH}" -v -o ./bin/$$os-$$arch/qilbot . \
-		done
-	done
-	@GOOS=linux GOARCH=arm go build -ldflags "-X main.Build=${VERSION} -X main.Revision=${REV} -X main.Branch=${BRANCH}" -v -o ./bin/$$os-$$arch/qilbot . \
+buildonly:
+	@go build -ldflags "-X main.Build=${VERSION} -X main.Revision=${REV} -X main.Branch=${BRANCH}" -v -o ./bin/qilbot .	
+
+crosscompile: linux-build darwin-build freebsd-build windows-build
+	@echo "Done"
+
+linux-build:
+	@echo "linux build..."
+	@GOOS=linux GOARCH=386 go build -ldflags "-X main.Build=${VERSION} -X main.Revision=${REV} -X main.Branch=${BRANCH}" -v -o ./bin/linux-386/qilbot .
+	@GOOS=linux GOARCH=amd64 go build -ldflags "-X main.Build=${VERSION} -X main.Revision=${REV} -X main.Branch=${BRANCH}" -v -o ./bin/linux-adm64/qilbot .
+	@GOOS=linux GOARCH=arm go build -ldflags "-X main.Build=${VERSION} -X main.Revision=${REV} -X main.Branch=${BRANCH}" -v -o ./bin/linux-arm/qilbot .
+
+darwin-build:
+	@echo "darwin build..."
+	@GOOS=darwin GOARCH=386 go build -ldflags "-X main.Build=${VERSION} -X main.Revision=${REV} -X main.Branch=${BRANCH}" -v -o ./bin/darwin-386/qilbot .
+	@GOOS=darwin GOARCH=amd64 go build -ldflags "-X main.Build=${VERSION} -X main.Revision=${REV} -X main.Branch=${BRANCH}" -v -o ./bin/darwin-adm64/qilbot .
+
+freebsd-build:
+	@echo "freebsd build..."
+	@GOOS=freebsd GOARCH=386 go build -ldflags "-X main.Build=${VERSION} -X main.Revision=${REV} -X main.Branch=${BRANCH}" -v -o ./bin/freebsd-386/qilbot .
+	@GOOS=freebsd GOARCH=amd64 go build -ldflags "-X main.Build=${VERSION} -X main.Revision=${REV} -X main.Branch=${BRANCH}" -v -o ./bin/freebsd-adm64/qilbot .
+
+windows-build:
+	@echo "windows build..."
+	@GOOS=windows GOARCH=386 go build -ldflags "-X main.Build=${VERSION} -X main.Revision=${REV} -X main.Branch=${BRANCH}" -v -o ./bin/windows-386/qilbot.exe .
+	@GOOS=windows GOARCH=amd64 go build -ldflags "-X main.Build=${VERSION} -X main.Revision=${REV} -X main.Branch=${BRANCH}" -v -o ./bin/windows-adm64/qilbot.exe .
 
 lint:
 	@echo "GO LINT..."
