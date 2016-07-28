@@ -6,3 +6,32 @@ go:
   - tip
     
 script: make ci
+
+before_deploy:
+  - "make crosscompile"
+  - "export darwin_386=$(echo bin/qilbot-darwin-386-${TRAVIS_TAG}.tgz)"
+  - "export darwin_amd64=$(echo bin/qilbot-darwin-amd64-${TRAVIS_TAG}.tgz)"
+  - "export freebsd_386=$(echo bin/qilbot-freebsd-386-${TRAVIS_TAG}.tgz)"
+  - "export freebsd_amd64=$(echo bin/qilbot-freebsd-amd64-${TRAVIS_TAG}.tgz)"
+  - "export linux_386=$(echo bin/qilbot-linux-386-${TRAVIS_TAG}.tgz)"
+  - "export linux_amd64=$(echo bin/qilbot-linux-amd64-${TRAVIS_TAG}.tgz)"
+  - "export linux_arm=$(echo bin/qilbot-linux-arm-${TRAVIS_TAG}.tgz)"
+  - "export windows_386=$(echo bin/qilbot-windows-386-${TRAVIS_TAG}.tgz)"
+  - "export windows_amd64=$(echo bin/qilbot-windows-amd64-${TRAVIS_TAG}.tgz)"
+deploy:
+  provider: releases
+  api_key:
+    secure: ${GITHUB_TOKEN}
+  file:
+    - "${darwin_386}"
+    - "${darwin_amd64}"
+    - "${freebsd_386}"
+    - "${freebsd_amd64}"
+    - "${linux_386}"
+    - "${linux_amd64}"
+    - "${linux_arm}"
+    - "${windows_386}"
+    - "${windows_amd64}"
+  on:
+    repo: dmportella/qilbot
+    tags: true
