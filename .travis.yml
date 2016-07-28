@@ -8,7 +8,7 @@ go:
 script: make ci
 
 before_deploy:
-  - "make crosscompile"
+  - "VERSION=${TRAVIS_TAG} make crosscompile"
   - "export darwin_386=$(echo bin/qilbot-darwin-386-${TRAVIS_TAG}.tgz)"
   - "export darwin_amd64=$(echo bin/qilbot-darwin-amd64-${TRAVIS_TAG}.tgz)"
   - "export freebsd_386=$(echo bin/qilbot-freebsd-386-${TRAVIS_TAG}.tgz)"
