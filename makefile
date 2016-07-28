@@ -10,7 +10,7 @@ VERSION?="0.0.0"
 default: version fmt lint vet test
 
 # Git commands
-commit:
+save:
 	@git add -A
 	@git commit
 	@git status
