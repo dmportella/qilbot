@@ -4,177 +4,83 @@ import (
 	"bytes"
 	"errors"
 	"fmt"
-	"github.com/bwmarrin/discordgo"
-	"github.com/dmportella/qilbot/bot"
 	"github.com/dmportella/qilbot/logging"
 	"github.com/dmportella/qilbot/utilities"
+	"io/ioutil"
+	"net/http"
+	"net/url"
 	"strconv"
-	"strings"
+	"time"
 )
 
-// New creates a new instance of EDSMPlugin.
-func New() Plugin {
-	const (
-		Name        = "EDSM Plugin"
-		Description = "Client plugin for Elite Dangerous Star Map web site."
-	)
-	return Plugin{
-		bot.Plugin{
-			Name:        Name,
-			Description: Description,
-			Commands: []bot.CommandInformation{
-				{
-					Command:     "distance",
-					Template:    "distance **sys1** / **sys2**",
-					Description: "Uses the coords in EDSM to calculate the distance between the two star systems.",
-				},
-				{
-					Command:     "sphere",
-					Template:    "sphere **sys1** 14.33ly",
-					Description: "Returns a list of systems within a specified distance to specified system.",
-				},
-			},
-		},
+// Helper variables for url creation
+var (
+	urlSphereSystems = func(systemName string, radius float64) string {
+		return fmt.Sprintf("%s?coords=1&showid=1&radius=%s&systemName=%s", EndpointSphereSystems, url.QueryEscape(strconv.FormatFloat(radius, 'f', 2, 64)), url.QueryEscape(systemName))
 	}
+
+	urlSystem = func(systemName string) string {
+		return fmt.Sprintf("%s?coords=1&systemName=%s", EndpointSystem, url.QueryEscape(systemName))
+	}
+)
+
+// NewAPIClient created an instance of APIClient
+// debug: tells APIClient if it should be running in debug mode.
+func NewAPIClient(debug bool) APIClient {
+	return APIClient{Debug: debug}
 }
 
-func (plugin *Plugin) getDistanceBetweenTwoSystems(systemName1 string, systemName2 string) (distance float64, err error) {
-	if sys1, ok1 := getSystem(systemName1); ok1 == nil {
-		if sys2, ok2 := getSystem(systemName2); ok2 == nil {
-			distance = calculateDistance(sys1.Coords, sys2.Coords)
-		} else {
-			logging.Trace.Println(ok2)
-			err = ok2
-		}
-	} else {
-		logging.Trace.Println(ok1)
-		err = ok1
-	}
+func (client *APIClient) request(method string, url string, b []byte) (response []byte, err error) {
+	req, err := http.NewRequest(method, url, bytes.NewBuffer(b))
+
+	req.Header.Set("accept", "application/json; charset=utf-8")
+	req.Header.Set("User-Agent", "Discord Bot (https://github.com/dmportella/qilbot, 0.0.0)")
+
+	httpClient := &http.Client{Timeout: (120 * time.Second)}
+
+	res, err := httpClient.Do(req)
+
+	defer res.Body.Close()
 
 	if err != nil {
-		err = errors.New("Unable to get distance between these systems.")
-	}
-
-	return
-}
-
-func (plugin *Plugin) getSphereSystems(systemName1 string, distance string) (systems []System, err error) {
-	if value, ok1 := strconv.ParseFloat(distance, 64); ok1 == nil {
-		if sysList, ok2 := getSphereSystems(systemName1, value); ok2 == nil {
-			systems = sysList
-		} else {
-			logging.Trace.Println(ok2)
-			err = ok2
-		}
-	} else {
-		logging.Trace.Println(ok1)
-		err = ok1
-	}
-
-	if err != nil {
-		err = errors.New("Unable to get nearest systems.")
-	}
-
-	return
-}
-
-// Initialize the init for EDSMPlugin.
-func (plugin *Plugin) Initialize(qilbot *bot.Qilbot) {
-	plugin.Qilbot = qilbot
-	qilbot.AddHandler(plugin.messageCreate)
-}
-
-func (plugin *Plugin) messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
-	// Ignore all messages created by the bot itself
-	if plugin.Plugin.Qilbot.IsBot(m.Author.ID) {
+		logging.Trace.Println("Request error", err)
+		err = errors.New("could not retrieve system information")
 		return
 	}
 
-	matches := utilities.RegexMatchBotCommand(m.Content)
+	response, err = ioutil.ReadAll(res.Body)
 
-	if len(matches) >= 3 && plugin.Plugin.Qilbot.IsBot(matches[1]) {
-		switch matches[2] {
-		case "distance":
-			plugin.displayDistance(s, m, matches[3])
-			break
-		case "sphere":
-			plugin.displaySphere(s, m, matches[3])
-		default:
-			return
+	if client.Debug {
+		logging.Trace.Printf("API RESPONSE\tSTATUS :: %s\n", res.Status)
+		for k, v := range res.Header {
+			logging.Trace.Printf("API RESPONSE\tHEADER :: [%s] = %+v\n", k, v)
 		}
+		logging.Trace.Printf("API RESPONSE\tBODY :: [%s]\n", response)
 	}
+	return
 }
 
-func (plugin *Plugin) displaySphere(s *discordgo.Session, m *discordgo.MessageCreate, commandText string) {
-	placeMatches := regexMatchSphereCommand(commandText)
-
-	logging.Trace.Println(placeMatches)
-
-	if len(placeMatches) >= 3 {
-		systemName := strings.TrimSpace(placeMatches[1])
-		distance := strings.TrimSpace(placeMatches[2])
-
-		logging.Trace.Println("systemname", systemName, "distance", distance)
-
-		s.ChannelTyping(m.ChannelID)
-
-		if sys1, ok1 := getSystem(systemName); ok1 == nil {
-			if systems, ok2 := plugin.getSphereSystems(sys1.Name, distance); ok2 == nil {
-				var buffer bytes.Buffer
-
-				header := fmt.Sprintf("Found **%d** systems within **%sly** of **%s**.\r\n", len(systems)-1, distance, sys1.Name)
-
-				buffer.WriteString(header)
-
-				buffer.Write([]byte("```\r\n"))
-
-				for _, sys2 := range systems {
-					if sys2.Name == sys1.Name {
-						continue
-					}
-
-					fmt.Fprintf(&buffer, "%-30s\t\t\t\t%9.2fly\r\n", sys2.Name, calculateDistance(sys1.Coords, sys2.Coords))
-				}
-
-				buffer.Write([]byte("```\r\n"))
-
-				if buffer.Len() > 8388608 {
-					logging.Trace.Println("msg large", buffer.Len())
-
-					_, _ = s.ChannelMessageSend(m.ChannelID, "Response is too large for discord please narrow you search.")
-				} else if buffer.Len() > 2000 {
-					logging.Trace.Println("msg attach", buffer.Len())
-					reader := bytes.NewReader(buffer.Bytes())
-					_, _ = s.ChannelFileSendWithMessage(m.ChannelID, header, "Results.txt", reader)
-				} else {
-					logging.Trace.Println("msg oke", buffer.Len())
-					_, _ = s.ChannelMessageSend(m.ChannelID, buffer.String())
-				}
-			} else {
-				_, _ = s.ChannelMessageSend(m.ChannelID, ok2.Error())
-			}
-		} else {
-			_, _ = s.ChannelMessageSend(m.ChannelID, ok1.Error())
-		}
+// GetSphereSystems gets all the systems within a specified radius of the system provided.
+// systemName: the name of the system to use as original.
+// radius: float64 radius of the search.
+func (client *APIClient) GetSphereSystems(systemName string, radius float64) (systems []System, err error) {
+	response, err := client.request("GET", urlSphereSystems(systemName, radius), nil)
+	if err != nil {
+		return
 	}
+
+	err = utilities.FromJSON(response, &systems)
+	return
 }
 
-func (plugin *Plugin) displayDistance(s *discordgo.Session, m *discordgo.MessageCreate, commandText string) {
-	placeMatches := regexMatchDistanceCommand(commandText)
-
-	if len(placeMatches) >= 3 {
-		sys1 := strings.TrimSpace(placeMatches[1])
-		sys2 := strings.TrimSpace(placeMatches[2])
-
-		s.ChannelTyping(m.ChannelID)
-
-		if distance, err := plugin.getDistanceBetweenTwoSystems(sys1, sys2); err == nil {
-			_, _ = s.ChannelMessageSend(m.ChannelID, fmt.Sprintf("The distance between **%s** and **%s** is **%.2fly**.", sys1, sys2, distance))
-		} else {
-			logging.Warning.Println(err)
-			_, _ = s.ChannelMessageSend(m.ChannelID, "There was an error trying to get the distance.")
-		}
-	} else {
-		_, _ = s.ChannelMessageSend(m.ChannelID, "Please give me two places, format: distance **A** / **B**")
+// GetSystem gets the the specified system information.
+// systemName: the name of the system to fetch
+func (client *APIClient) GetSystem(systemName string) (system System, err error) {
+	response, err := client.request("GET", urlSystem(systemName), nil)
+	if err != nil {
+		return
 	}
+
+	err = utilities.FromJSON(response, &system)
+	return
 }

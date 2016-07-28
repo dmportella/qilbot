@@ -15,4 +15,5 @@ type QilbotConfig struct {
 	Email    string
 	Password string
 	Token    string
+	Debug    bool
 }

@@ -73,9 +73,10 @@ func main() {
 	}
 
 	botConfig := bot.QilbotConfig{
-		Email:    Email,
-		Password: Password,
-		Token:    Token,
+		Email:		Email,
+		Password:	Password,
+		Token:		Token,
+		Debug:		Verbose,
 	}
 
 	bot, ok := bot.New(&botConfig)
@@ -95,11 +96,13 @@ func main() {
 }
 
 func loadPlugins() {
-	commonPlugin := common.New()
-	edsmPlugin := edsm.New()
+	commonPlugin := common.NewPlugin(&botInstance)
 
-	botInstance.AddPlugin(&commonPlugin)
-	botInstance.AddPlugin(&edsmPlugin)
+	logging.Info.Println(commonPlugin.GetHelpText())
+
+	edsmPlugin := edsm.NewPlugin(&botInstance)
+
+	logging.Info.Println(edsmPlugin.GetHelpText())
 }
 
 func startbot() {

@@ -8,14 +8,16 @@ import (
 	"github.com/dmportella/qilbot/utilities"
 )
 
-// New creates a new instance of Common Plugin.
-func New() Plugin {
+// NewPlugin creates a new instance of Common Plugin.
+func NewPlugin(qilbot *bot.Qilbot) (plugin *Plugin) {
 	const (
 		Name        = "Qilbot Common plugin"
 		Description = "Common plugin for qibot a a place for generic commands."
 	)
-	return Plugin{
+
+	plugin = &Plugin{
 		bot.Plugin{
+			Qilbot:      qilbot,
 			Name:        Name,
 			Description: Description,
 			Commands: []bot.CommandInformation{
@@ -32,12 +34,11 @@ func New() Plugin {
 			},
 		},
 	}
-}
 
-// Initialize the init method for the common plugin
-func (plugin *Plugin) Initialize(qilbot *bot.Qilbot) {
-	plugin.Qilbot = qilbot
+	qilbot.AddPlugin(plugin)
 	qilbot.AddHandler(plugin.messageCreate)
+
+	return
 }
 
 func (plugin *Plugin) messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
@@ -74,8 +75,9 @@ func (plugin *Plugin) displayHelp(s *discordgo.Session, m *discordgo.MessageCrea
 	var buffer bytes.Buffer
 	buffer.WriteString("List of Commands available to Qilbot.\n")
 	for _, item := range plugin.Plugin.Qilbot.Plugins {
+		buffer.WriteString(fmt.Sprintf("%s\n", item.GetHelpText()))
 		for _, command := range item.GetCommands() {
-			buffer.WriteString(fmt.Sprintf("**%s** (%s): %s\n", command.Command, command.Template, command.Description))
+			buffer.WriteString(fmt.Sprintf("\t**%s** (%s): %s\n", command.Command, command.Template, command.Description))
 
 		}
 	}

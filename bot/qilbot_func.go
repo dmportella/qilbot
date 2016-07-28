@@ -31,6 +31,11 @@ func New(config *QilbotConfig) (bot *Qilbot, err error) {
 	return
 }
 
+// InDebugMode returns true if qilbot is running in debug mode.
+func (qilbot *Qilbot) InDebugMode() bool {
+	return qilbot.config.Debug
+}
+
 // Start Opens a WebSocket connection with discord.
 func (qilbot *Qilbot) Start() (err error) {
 	// Open the websocket and begin listening.
@@ -49,10 +54,6 @@ func (qilbot *Qilbot) Stop() {
 // AddPlugin Add a plugin to qilbot that will be initialised with a instance for the discord session.
 func (qilbot *Qilbot) AddPlugin(plugin IPlugin) {
 	qilbot.Plugins = append(qilbot.Plugins, plugin)
-
-	logging.Info.Println(plugin.GetHelpText())
-
-	plugin.Initialize(qilbot)
 }
 
 // AddHandler Adds an event handler for discord events

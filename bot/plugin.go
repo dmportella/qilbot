@@ -2,6 +2,7 @@ package bot
 
 // Plugin describes a plugin in qilbot.
 type Plugin struct {
+	IPlugin
 	Name        string
 	Description string
 	Qilbot      *Qilbot
@@ -19,5 +20,4 @@ type CommandInformation struct {
 type IPlugin interface {
 	GetCommands() []CommandInformation
 	GetHelpText() string
-	Initialize(qilbot *Qilbot)
 }
