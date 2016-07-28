@@ -9,8 +9,11 @@ default: version fmt lint vet test
 
 # Git commands
 commit:
-	@git add . 
-	-@git rm $(git ls-files --others --deleted --exclude-standard)
+	@git add .
+	RM_FILES=$$(git ls-files --others --deleted --exclude-standard)
+	@if [ "$(RM_FILES)" != "" ]; then \
+		@git rm $(RM_FILES); \
+	fi
 	@git commit 
 	@git status
 push:
