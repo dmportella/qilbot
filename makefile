@@ -3,18 +3,21 @@ VETARGS?=-all
 GOFMT_FILES?=$$(find . -name '*.go' | grep -v vendor)
 REV?=$$(git rev-parse --short HEAD)
 BRANCH?=$$(git rev-parse --abbrev-ref HEAD)
+ADD_FILES?=$$(git status -s | awk '$1 == "M" { print $2 }')
+RM_FILES?= $$(git ls-files --others --deleted --exclude-standard)
 VERSION?="0.0.0"
 
 default: version fmt lint vet test
 
 # Git commands
 commit:
-	@git add .
-	RM_FILES=$$(git ls-files --others --deleted --exclude-standard)
-	@if [ "$(RM_FILES)" != "" ]; then \
-		@git rm $(RM_FILES); \
+	@if [ -n "$ADD_FILES" ]; then \
+		git add . ; \
 	fi
-	@git commit 
+	@if [ -n "$RM_FILES" ] ; then \
+		git rm ${RM_FILES} ; \
+	fi
+	@git commit
 	@git status
 push:
 	@git push origin ${BRANCH}
