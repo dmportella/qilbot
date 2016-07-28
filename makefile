@@ -38,7 +38,13 @@ build: version test
 	@go build -ldflags "-X main.Build=${VERSION} -X main.Revision=${REV} -X main.Branch=${BRANCH}" -v -o qilbot .
 
 crosscompile:
-	@go build -ldflags "-X main.Build=${VERSION} -X main.Revision=${REV} -X main.Branch=${BRANCH}" -v -o qilbot .
+	
+	@for os in "darwin" "freebsd" "linux" "windows"; do \
+		for arch in "386" "amd64"; do \
+			GOOS=$$os GOARCH=$$arch go build -ldflags "-X main.Build=${VERSION} -X main.Revision=${REV} -X main.Branch=${BRANCH}" -v -o ./bin/$$os-$$arch/qilbot . \
+		done
+	done
+	@GOOS=linux GOARCH=arm go build -ldflags "-X main.Build=${VERSION} -X main.Revision=${REV} -X main.Branch=${BRANCH}" -v -o ./bin/$$os-$$arch/qilbot . \
 
 lint:
 	@echo "GO LINT..."

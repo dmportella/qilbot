@@ -73,10 +73,10 @@ func main() {
 	}
 
 	botConfig := bot.QilbotConfig{
-		Email:		Email,
-		Password:	Password,
-		Token:		Token,
-		Debug:		Verbose,
+		Email:    Email,
+		Password: Password,
+		Token:    Token,
+		Debug:    Verbose,
 	}
 
 	bot, ok := bot.New(&botConfig)
