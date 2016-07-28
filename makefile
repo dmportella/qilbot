@@ -3,8 +3,6 @@ VETARGS?=-all
 GOFMT_FILES?=$$(find . -name '*.go' | grep -v vendor)
 REV?=$$(git rev-parse --short HEAD)
 BRANCH?=$$(git rev-parse --abbrev-ref HEAD)
-ADD_FILES?=$$(git status -s | awk '$$1 == "M" { print $2 }')
-RM_FILES?= $$(git ls-files --others --deleted --exclude-standard)
 VERSION?="0.0.0"
 
 default: version fmt lint vet test
