@@ -56,6 +56,11 @@ func init() {
 
 	flag.BoolVar(&Verbose, "verbose", defaultVerbose, verboseUsage)
 	flag.Parse()
+
+	flag.Usage = func() {
+		fmt.Printf("Usage of %s:\n", os.Args[0])
+		flag.PrintDefaults()
+	}
 }
 
 func main() {
@@ -65,6 +70,11 @@ func main() {
 		logging.Init(os.Stdout, os.Stdout, os.Stdout, os.Stderr)
 	} else {
 		logging.Init(ioutil.Discard, os.Stdout, os.Stdout, os.Stderr)
+	}
+
+	if len(os.Args) == 1 {
+		flag.Usage()
+		os.Exit(1)
 	}
 
 	if Password == "" && Email == "" && Token == "" {
