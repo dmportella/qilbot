@@ -52,8 +52,8 @@ tar-everything:
 	@tar -zcvf bin/qilbot-darwin-amd64-${VERSION}.tgz bin/darwin-amd64
 	@tar -zcvf bin/qilbot-freebsd-386-${VERSION}.tgz bin/freebsd-386
 	@tar -zcvf bin/qilbot-freebsd-amd64-${VERSION}.tgz bin/freebsd-amd64
-	@tar -zcvf bin/qilbot-windows-386-${VERSION}.tgz bin/windows-386
-	@tar -zcvf bin/qilbot-windows-amd64-${VERSION}.tgz bin/windows-amd64
+	@zip -9 -y -r -q bin/bin/qilbot-windows-386-${VERSION}.zip bin/windows-386
+	@zip -9 -y -r -q bin/qilbot-windows-amd64-${VERSION}.zip bin/windows-amd64
 
 linux-build:
 	@echo "linux build..."
