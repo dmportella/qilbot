@@ -43,14 +43,15 @@ func (client *APIClient) request(method string, url string, b []byte) (response 
 	defer res.Body.Close()
 
 	if err != nil {
-		logging.Trace.Println("Request error", err)
-		err = errors.New("could not retrieve system information")
+		logging.Warning.Println("Request error", err)
+		err = errors.New("Http request returned an error")
 		return
 	}
 
 	response, err = ioutil.ReadAll(res.Body)
 
 	if client.Debug {
+		logging.Trace.Printf("API REQUEST\tURL :: %s\n", url)
 		logging.Trace.Printf("API RESPONSE\tSTATUS :: %s\n", res.Status)
 		for k, v := range res.Header {
 			logging.Trace.Printf("API RESPONSE\tHEADER :: [%s] = %+v\n", k, v)

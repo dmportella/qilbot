@@ -54,17 +54,12 @@ func (plugin *Plugin) getDistanceBetweenTwoSystems(systemName1 string, systemNam
 			distance = calculateDistance(sys1.Coords, sys2.Coords)
 		} else {
 			logging.Trace.Println(ok2)
-			err = ok2
+			err = fmt.Errorf("EDSM couldn't fetch information about %s system", systemName2)
 		}
 	} else {
 		logging.Trace.Println(ok1)
-		err = ok1
+		err = fmt.Errorf("EDSM couldn't fetch information about %s system", systemName1)
 	}
-
-	if err != nil {
-		err = errors.New("Unable to get distance between these systems.")
-	}
-
 	return
 }
 
@@ -74,17 +69,12 @@ func (plugin *Plugin) getSphereSystems(systemName1 string, distance string) (sys
 			systems = sysList
 		} else {
 			logging.Trace.Println(ok2)
-			err = ok2
+			err = fmt.Errorf("EDSM couldn't fetch information about %s system", systemName1)
 		}
 	} else {
 		logging.Trace.Println(ok1)
-		err = ok1
+		err = errors.New("The distance provided is not a float number")
 	}
-
-	if err != nil {
-		err = errors.New("Unable to get nearest systems.")
-	}
-
 	return
 }
 
@@ -175,8 +165,8 @@ func (plugin *Plugin) displayDistance(s *discordgo.Session, m *discordgo.Message
 		if distance, err := plugin.getDistanceBetweenTwoSystems(sys1, sys2); err == nil {
 			_, _ = s.ChannelMessageSend(m.ChannelID, fmt.Sprintf("The distance between **%s** and **%s** is **%.2fly**.", sys1, sys2, distance))
 		} else {
-			logging.Warning.Println(err)
-			_, _ = s.ChannelMessageSend(m.ChannelID, "There was an error trying to get the distance.")
+			logging.Trace.Println(err)
+			_, _ = s.ChannelMessageSend(m.ChannelID, err.Error())
 		}
 	} else {
 		_, _ = s.ChannelMessageSend(m.ChannelID, "Please give me two places, format: distance **A** / **B**")
