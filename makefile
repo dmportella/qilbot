@@ -52,29 +52,34 @@ tar-everything:
 	@tar -zcvf bin/qilbot-darwin-amd64-${VERSION}.tgz bin/darwin-amd64
 	@tar -zcvf bin/qilbot-freebsd-386-${VERSION}.tgz bin/freebsd-386
 	@tar -zcvf bin/qilbot-freebsd-amd64-${VERSION}.tgz bin/freebsd-amd64
-	@zip -9 -y -r -q bin/bin/qilbot-windows-386-${VERSION}.zip bin/windows-386
+	@zip -9 -y -r -q bin/qilbot-windows-386-${VERSION}.zip bin/windows-386
 	@zip -9 -y -r -q bin/qilbot-windows-amd64-${VERSION}.zip bin/windows-amd64
 
 linux-build:
-	@echo "linux build..."
-	@GOOS=linux GOARCH=386 go build -ldflags "-X main.Build=${VERSION} -X main.Revision=${REV} -X main.Branch=${BRANCH}" -v -o ./bin/linux-386/qilbot .
-	@GOOS=linux GOARCH=amd64 go build -ldflags "-X main.Build=${VERSION} -X main.Revision=${REV} -X main.Branch=${BRANCH}" -v -o ./bin/linux-amd64/qilbot .
-	@GOOS=linux GOARCH=arm go build -ldflags "-X main.Build=${VERSION} -X main.Revision=${REV} -X main.Branch=${BRANCH}" -v -o ./bin/linux-arm/qilbot .
+	@echo "linux build... 386"
+	@GOOS=linux GOARCH=386 go build -ldflags "-X main.Build=${VERSION} -X main.Revision=${REV} -X main.Branch=${BRANCH}" -v -o ./bin/linux-386/qilbot . 2>/dev/null
+	@echo "linux build... amd64"
+	@GOOS=linux GOARCH=amd64 go build -ldflags "-X main.Build=${VERSION} -X main.Revision=${REV} -X main.Branch=${BRANCH}" -v -o ./bin/linux-amd64/qilbot . 2>/dev/null
+	@echo "linux build... arm"
+	@GOOS=linux GOARCH=arm go build -ldflags "-X main.Build=${VERSION} -X main.Revision=${REV} -X main.Branch=${BRANCH}" -v -o ./bin/linux-arm/qilbot . 2>/dev/null
 
 darwin-build:
-	@echo "darwin build..."
-	@GOOS=darwin GOARCH=386 go build -ldflags "-X main.Build=${VERSION} -X main.Revision=${REV} -X main.Branch=${BRANCH}" -v -o ./bin/darwin-386/qilbot .
-	@GOOS=darwin GOARCH=amd64 go build -ldflags "-X main.Build=${VERSION} -X main.Revision=${REV} -X main.Branch=${BRANCH}" -v -o ./bin/darwin-amd64/qilbot .
+	@echo "darwin build... 386"
+	@GOOS=darwin GOARCH=386 go build -ldflags "-X main.Build=${VERSION} -X main.Revision=${REV} -X main.Branch=${BRANCH}" -v -o ./bin/darwin-386/qilbot . 2>/dev/null
+	@echo "darwin build... amd64"
+	@GOOS=darwin GOARCH=amd64 go build -ldflags "-X main.Build=${VERSION} -X main.Revision=${REV} -X main.Branch=${BRANCH}" -v -o ./bin/darwin-amd64/qilbot . 2>/dev/null
 
 freebsd-build:
-	@echo "freebsd build..."
-	@GOOS=freebsd GOARCH=386 go build -ldflags "-X main.Build=${VERSION} -X main.Revision=${REV} -X main.Branch=${BRANCH}" -v -o ./bin/freebsd-386/qilbot .
-	@GOOS=freebsd GOARCH=amd64 go build -ldflags "-X main.Build=${VERSION} -X main.Revision=${REV} -X main.Branch=${BRANCH}" -v -o ./bin/freebsd-amd64/qilbot .
+	@echo "freebsd build... 386"
+	@GOOS=freebsd GOARCH=386 go build -ldflags "-X main.Build=${VERSION} -X main.Revision=${REV} -X main.Branch=${BRANCH}" -v -o ./bin/freebsd-386/qilbot . 2>/dev/null
+	@echo "freebsd build... amd64"
+	@GOOS=freebsd GOARCH=amd64 go build -ldflags "-X main.Build=${VERSION} -X main.Revision=${REV} -X main.Branch=${BRANCH}" -v -o ./bin/freebsd-amd64/qilbot . 2>/dev/null
 
 windows-build:
-	@echo "windows build..."
-	@GOOS=windows GOARCH=386 go build -ldflags "-X main.Build=${VERSION} -X main.Revision=${REV} -X main.Branch=${BRANCH}" -v -o ./bin/windows-386/qilbot.exe .
-	@GOOS=windows GOARCH=amd64 go build -ldflags "-X main.Build=${VERSION} -X main.Revision=${REV} -X main.Branch=${BRANCH}" -v -o ./bin/windows-amd64/qilbot.exe .
+	@echo "windows build... 386"
+	@GOOS=windows GOARCH=386 go build -ldflags "-X main.Build=${VERSION} -X main.Revision=${REV} -X main.Branch=${BRANCH}" -v -o ./bin/windows-386/qilbot.exe . 2>/dev/null
+	@echo "windows build... amd64"
+	@GOOS=windows GOARCH=amd64 go build -ldflags "-X main.Build=${VERSION} -X main.Revision=${REV} -X main.Branch=${BRANCH}" -v -o ./bin/windows-amd64/qilbot.exe . 2>/dev/null
 
 lint:
 	@echo "GO LINT..."
