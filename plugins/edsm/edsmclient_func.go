@@ -61,6 +61,17 @@ func (client *APIClient) request(method string, url string, b []byte) (response 
 	return
 }
 
+// GetAPIStatus gets the API status for EDSM.
+func (client *APIClient) GetAPIStatus() (status APIStatus, err error) {
+	response, err := client.request("GET", EndpointStatus, nil)
+	if err != nil {
+		return
+	}
+
+	err = utilities.FromJSON(response, &status)
+	return
+}
+
 // GetSphereSystems gets all the systems within a specified radius of the system provided.
 // systemName: the name of the system to use as original.
 // radius: float64 radius of the search.

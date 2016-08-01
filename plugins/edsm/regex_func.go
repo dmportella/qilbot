@@ -5,8 +5,8 @@ import (
 )
 
 const (
-	distanceCommandRegex	= `^(.*)\s?\/\s?(.*)`
-	sphereCommandRegex		= `^(.*)\s+?(\d*\.?\d*)`
+	distanceCommandRegex = `^(.*)\s?\/\s?(.*)`
+	sphereCommandRegex   = `^(.*)\s+?(\d*\.?\d*)`
 )
 
 // regexMatchDistanceCommand matches a distance command.
