@@ -36,6 +36,16 @@ func NewPlugin(qilbot *bot.Qilbot) (plugin *Plugin) {
 	}
 
 	qilbot.AddPlugin(plugin)
+	qilbot.AddCommand(&bot.CommandInformation{
+		Command:     "plugins",
+		Template:    "plugins",
+		Description: "Display a list of plugins enabled on qilbot.",
+	})
+	qilbot.AddCommand(&bot.CommandInformation{
+		Command:     "help",
+		Template:    "help",
+		Description: "Display a list of commands available to qilbot.",
+	})
 	qilbot.AddHandler(plugin.messageCreate)
 
 	return

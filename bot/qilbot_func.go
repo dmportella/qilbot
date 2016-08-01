@@ -1,13 +1,19 @@
 package bot
 
 import (
+	"fmt"
 	"github.com/bwmarrin/discordgo"
 	"github.com/dmportella/qilbot/logging"
 )
 
 // New creates a new instance of Qilbot
 func New(config *QilbotConfig) (bot *Qilbot, err error) {
-	bot = &Qilbot{config: config}
+	bot = &Qilbot{
+		config:      config,
+		Plugins:     []IPlugin{},
+		stopChannel: make(chan struct{}),
+		commands:    make(map[string]*CommandInformation),
+	}
 
 	// Create a new Discord session using the provided login information.
 	if dg, ok := discordgo.New(bot.config.Email, bot.config.Password, bot.config.Token); ok != nil {
@@ -25,8 +31,6 @@ func New(config *QilbotConfig) (bot *Qilbot, err error) {
 		// store bot user id for later use.
 		bot.BotID = u.ID
 	}
-
-	bot.Plugins = []IPlugin{}
 
 	return
 }
@@ -46,14 +50,25 @@ func (qilbot *Qilbot) Start() (err error) {
 	return
 }
 
-// Stop not implemented
+// Stop signal all go routines to stop.
 func (qilbot *Qilbot) Stop() {
-	// discordgo package doesn't seem to have any close or stop functionality.
+	close(qilbot.stopChannel)
 }
 
 // AddPlugin Add a plugin to qilbot that will be initialised with a instance for the discord session.
 func (qilbot *Qilbot) AddPlugin(plugin IPlugin) {
 	qilbot.Plugins = append(qilbot.Plugins, plugin)
+}
+
+// AddCommand Add a command to the list of commands available to qilbot.
+func (qilbot *Qilbot) AddCommand(command *CommandInformation) (err error) {
+	if _, ok := qilbot.commands[command.Command]; ok {
+		err = fmt.Errorf("Another command is registered with this '%s' name", command.Command)
+		return
+	}
+
+	qilbot.commands[command.Command] = command
+	return
 }
 
 // AddHandler Adds an event handler for discord events

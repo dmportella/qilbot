@@ -8,6 +8,7 @@ func (plugin *Plugin) GetHelpText() (msg string) {
 }
 
 // GetCommands generic implementation for getting commands.
+// This will be deprecated
 func (plugin *Plugin) GetCommands() []CommandInformation {
 	return plugin.Commands
 }

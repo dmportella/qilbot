@@ -1,8 +1,13 @@
 package bot
 
+import (
+	"github.com/bwmarrin/discordgo"
+)
+
 // Plugin describes a plugin in qilbot.
 type Plugin struct {
 	IPlugin
+	ID          string
 	Name        string
 	Description string
 	Qilbot      *Qilbot
@@ -14,6 +19,7 @@ type CommandInformation struct {
 	Command     string
 	Template    string
 	Description string
+	Execute     func(s *discordgo.Session, m *discordgo.MessageCreate, commandtext string)
 }
 
 // IPlugin interface used by qilbot.
