@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/bwmarrin/discordgo"
 	"github.com/dmportella/qilbot/logging"
+	"github.com/dmportella/qilbot/utilities"
 )
 
 // New creates a new instance of Qilbot
@@ -32,7 +33,28 @@ func New(config *QilbotConfig) (bot *Qilbot, err error) {
 		bot.BotID = u.ID
 	}
 
+	bot.AddHandler(bot.discordCreateMessage)
+
 	return
+}
+
+func (qilbot *Qilbot) discordCreateMessage(s *discordgo.Session, m *discordgo.MessageCreate) {
+	// Ignore all messages created by the bot itself
+	if qilbot.IsBot(m.Author.ID) {
+		return
+	}
+
+	matches := utilities.RegexMatchBotCommand(m.Content)
+
+	logging.Info.Println(matches)
+
+	if len(matches) > 0 {
+		commandCalled := matches[1]
+
+		if command, ok := qilbot.commands[commandCalled]; ok {
+			go command.Execute(s, m, matches[2])
+		}
+	}
 }
 
 // InDebugMode returns true if qilbot is running in debug mode.

@@ -5,7 +5,8 @@ import (
 	"fmt"
 	"github.com/bwmarrin/discordgo"
 	"github.com/dmportella/qilbot/bot"
-	"github.com/dmportella/qilbot/utilities"
+	"github.com/dmportella/qilbot/logging"
+	"strings"
 )
 
 // NewPlugin creates a new instance of Common Plugin.
@@ -25,71 +26,58 @@ func NewPlugin(qilbot *bot.Qilbot) (plugin *Plugin) {
 					Command:     "plugins",
 					Template:    "plugins",
 					Description: "Display a list of plugins enabled on qilbot.",
+					Execute: func(s *discordgo.Session, m *discordgo.MessageCreate, commandText string) {
+						plugin.pluginsCommand(s, m, commandText)
+					},
 				},
 				{
 					Command:     "help",
-					Template:    "help",
-					Description: "Display a list of commands available to qilbot.",
+					Template:    "!help or !help *command*",
+					Description: "Display a list of commands available to qilbot and more information about specific commands.",
+					Execute: func(s *discordgo.Session, m *discordgo.MessageCreate, commandText string) {
+						plugin.helpCommand(s, m, commandText)
+					},
 				},
 			},
 		},
 	}
 
 	qilbot.AddPlugin(plugin)
-	qilbot.AddCommand(&bot.CommandInformation{
-		Command:     "plugins",
-		Template:    "plugins",
-		Description: "Display a list of plugins enabled on qilbot.",
-	})
-	qilbot.AddCommand(&bot.CommandInformation{
-		Command:     "help",
-		Template:    "help",
-		Description: "Display a list of commands available to qilbot.",
-	})
-	qilbot.AddHandler(plugin.messageCreate)
+
+	qilbot.AddCommand(&plugin.Commands[0])
+	qilbot.AddCommand(&plugin.Commands[1])
 
 	return
 }
 
-func (plugin *Plugin) messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
-	// Ignore all messages created by the bot itself
-	if plugin.Plugin.Qilbot.IsBot(m.Author.ID) {
-		return
-	}
+func (plugin *Plugin) helpCommand(s *discordgo.Session, m *discordgo.MessageCreate, commandText string) {
+	var buffer bytes.Buffer
 
-	matches := utilities.RegexMatchBotCommand(m.Content)
+	logging.Info.Println("comand text", commandText)
 
-	if len(matches) >= 3 && plugin.Plugin.Qilbot.IsBot(matches[1]) {
-		switch matches[2] {
-		case "plugins":
-			plugin.displayPluginList(s, m)
-			break
-		case "help":
-			plugin.displayHelp(s, m)
-			break
-		default:
-			return
+	specificCommand := commandText != ""
+
+	for _, item := range plugin.Plugin.Qilbot.Plugins {
+		for _, command := range item.GetCommands() {
+			if strings.Compare(strings.ToLower(commandText), strings.ToLower(command.Command)) == 0 {
+				buffer.WriteString(fmt.Sprintf("**%s** (%s): %s\n", command.Command, command.Template, command.Description))
+			} else if !specificCommand {
+				buffer.WriteString(fmt.Sprintf("**%s** (%s): %s\n", command.Command, command.Template, command.Description))
+			}
 		}
 	}
+
+	channel, _ := s.UserChannelCreate(m.Author.ID)
+
+	logging.Trace.Println(channel)
+
+	_, _ = s.ChannelMessageSend(channel.ID, buffer.String())
 }
 
-func (plugin *Plugin) displayPluginList(s *discordgo.Session, m *discordgo.MessageCreate) {
+func (plugin *Plugin) pluginsCommand(s *discordgo.Session, m *discordgo.MessageCreate, commandText string) {
 	var buffer bytes.Buffer
 	for _, item := range plugin.Plugin.Qilbot.Plugins {
 		buffer.WriteString(item.GetHelpText() + "\n")
-	}
-	_, _ = s.ChannelMessageSend(m.ChannelID, buffer.String())
-}
-
-func (plugin *Plugin) displayHelp(s *discordgo.Session, m *discordgo.MessageCreate) {
-	var buffer bytes.Buffer
-	buffer.WriteString("List of Commands available to Qilbot.\n")
-	for _, item := range plugin.Plugin.Qilbot.Plugins {
-		buffer.WriteString(fmt.Sprintf("%s\n", item.GetHelpText()))
-		for _, command := range item.GetCommands() {
-			buffer.WriteString(fmt.Sprintf("\t**%s** (%s): %s\n", command.Command, command.Template, command.Description))
-
-		}
 	}
 	_, _ = s.ChannelMessageSend(m.ChannelID, buffer.String())
 }

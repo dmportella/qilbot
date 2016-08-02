@@ -19,7 +19,7 @@ type CommandInformation struct {
 	Command     string
 	Template    string
 	Description string
-	Execute     func(s *discordgo.Session, m *discordgo.MessageCreate, commandtext string)
+	Execute     func(s *discordgo.Session, m *discordgo.MessageCreate, commandText string)
 }
 
 // IPlugin interface used by qilbot.
