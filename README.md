@@ -8,17 +8,6 @@ Qilbot is a discord bot written in `GOLANG`.
 
 Project Board: [https://waffle.io/dmportella/qilbot](https://waffle.io/dmportella/qilbot)
 
-## Installing Qilbot
-
-### Create a Discord Application
-
-* Create an Discord Application.
-  * At: https://discordapp.com/developers/applications/me
-    Make sure you are logged in.
-* Create a Bot for your newly created Application.
-  * At: Ignore the message about not being reversable we dont care.
-* Save the newly created token (you will need to click the reveal link)
-
-### Running Qilbot
+## Documentation
 
 Please check the wiki for more information: [WIKI](https://github.com/dmportella/qilbot/wiki)
