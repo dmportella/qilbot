@@ -12,8 +12,17 @@ save:
 	@git add -A
 	@git commit
 	@git status
+
 push:
 	@git push origin ${BRANCH}
+
+subtree-pull:
+	@git log | grep git-subtree-dir | awk '{ print $2 }'
+	@git subtree pull --prefix=website/public git@github.com:dmportella/qilbot.git gh-pages
+
+subtree-push:
+	@git log | grep git-subtree-dir | awk '{ print $2 }'
+	@git subtree push --prefix=website/public git@github.com:dmportella/qilbot.git gh-pages
 
 update:
 	@git pull origin ${BRANCH}
