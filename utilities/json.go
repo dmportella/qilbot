@@ -16,3 +16,12 @@ func FromJSON(data []byte, v interface{}) error {
 
 	return nil
 }
+
+// ToJSON coverts a object into it's json representation and returns a byte array.
+func ToJSON(v interface{}) (data []byte, err error) {
+	data, err = json.Marshal(v)
+	if err != nil {
+		return
+	}
+	return
+}

@@ -38,6 +38,14 @@ func NewPlugin(qilbot *bot.Qilbot) (plugin *Plugin) {
 						plugin.helpCommand(s, m, commandText)
 					},
 				},
+				{
+					Command:     "set",
+					Template:    "!set *variable* on|off",
+					Description: "Changes the settings of qilbot at runtime.",
+					Execute: func(s *discordgo.Session, m *discordgo.MessageCreate, commandText string) {
+						plugin.setCommand(s, m, commandText)
+					},
+				},
 			},
 		},
 	}
@@ -46,6 +54,7 @@ func NewPlugin(qilbot *bot.Qilbot) (plugin *Plugin) {
 
 	qilbot.AddCommand(&plugin.Commands[0])
 	qilbot.AddCommand(&plugin.Commands[1])
+	qilbot.AddCommand(&plugin.Commands[2])
 
 	return
 }
@@ -80,4 +89,17 @@ func (plugin *Plugin) pluginsCommand(s *discordgo.Session, m *discordgo.MessageC
 		buffer.WriteString(item.GetHelpText() + "\n")
 	}
 	_, _ = s.ChannelMessageSend(m.ChannelID, buffer.String())
+}
+
+func (plugin *Plugin) setCommand(s *discordgo.Session, m *discordgo.MessageCreate, commandText string) {
+	var buffer bytes.Buffer
+
+	channel, _ := s.Channel(m.ChannelID)
+
+	guild, _ := s.Guild(channel.GuildID)
+
+	if guild.OwnerID != m.Author.ID {
+		buffer.WriteString("Only the Server owner can change the bot settings...")
+		_, _ = s.ChannelMessageSend(m.ChannelID, buffer.String())
+	}
 }
