@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+	<channel>
+		<title>Docs on Qilbot a Discord bot </title>
+		<link>https://dmportella.github.io/qilbot/docs/</link>
+		<language>en-GB</language>
+		<author>dmportella</author>
+		<rights>Copyright (c) 2016, dmportella; all rights reserved.</rights>
+		<updated>Fri, 05 Aug 2016 11:35:48 BST</updated>
+		
+		<item>
+			<title>index</title>
+			<link>https://dmportella.github.io/qilbot/docs/discord/</link>
+			<pubDate>Fri, 05 Aug 2016 11:35:48 BST</pubDate>
+			<author>dmportella</author>
+			<guid>https://dmportella.github.io/qilbot/docs/discord/</guid>
+			<description>
+
+&lt;h3 id=&#34;section-x&#34;&gt;Section X&lt;/h3&gt;
+
+&lt;h1 id=&#34;section-header&#34;&gt;Section Header&lt;/h1&gt;
+
+&lt;p&gt;Some text&lt;/p&gt;
+</description>
+		</item>
+		
+		<item>
+			<title>index</title>
+			<link>https://dmportella.github.io/qilbot/docs/</link>
+			<pubDate>Fri, 05 Aug 2016 11:23:21 BST</pubDate>
+			<author>dmportella</author>
+			<guid>https://dmportella.github.io/qilbot/docs/</guid>
+			<description>
+
+&lt;h3 id=&#34;section-x&#34;&gt;Section X&lt;/h3&gt;
+
+&lt;h1 id=&#34;section-header&#34;&gt;Section Header&lt;/h1&gt;
+
+&lt;p&gt;Some text&lt;/p&gt;
+</description>
+		</item>
+		
+	</channel>
+</rss>

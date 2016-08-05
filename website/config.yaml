@@ -1,0 +1,7 @@
+baseurl: https://dmportella.github.io/qilbot
+languageCode: en-gb
+title: Qilbot a Discord bot
+canonifyurls: true
+params:
+  editURL: "https://github.com/dmportella/qilbot/blob/master/website/content"
+...
