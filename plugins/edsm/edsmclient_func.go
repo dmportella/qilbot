@@ -22,6 +22,10 @@ var (
 	urlSystem = func(systemName string) string {
 		return fmt.Sprintf("%s?coords=1&systemName=%s", EndpointSystem, url.QueryEscape(systemName))
 	}
+
+	urlGetPosition = func(commanderName string) string {
+		return fmt.Sprintf("%s?commanderName=%s", EndpointLogGetPosition, url.QueryEscape(commanderName))
+	}
 )
 
 // NewAPIClient created an instance of APIClient
@@ -94,5 +98,17 @@ func (client *APIClient) GetSystem(systemName string) (system System, err error)
 	}
 
 	err = utilities.FromJSON(response, &system)
+	return
+}
+
+// GetPosition Gets the player location in EDSM
+// commanderName: the name of the commander to fetch
+func (client *APIClient) GetPosition(commanderName string) (commanderPosition CommanderPosition, err error) {
+	response, err := client.request("GET", urlGetPosition(commanderName), nil)
+	if err != nil {
+		return
+	}
+
+	err = utilities.FromJSON(response, &commanderPosition)
 	return
 }

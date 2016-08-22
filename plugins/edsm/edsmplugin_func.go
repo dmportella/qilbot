@@ -42,6 +42,14 @@ func NewPlugin(qilbot *bot.Qilbot) (plugin *Plugin) {
 						plugin.sphereCommand(s, m, commandText)
 					},
 				},
+				{
+					Command:     "locate",
+					Template:    "locate **Commander Name**",
+					Description: "Returns the location of a commander in EDSM.",
+					Execute: func(s *discordgo.Session, m *discordgo.MessageCreate, commandText string) {
+						plugin.locateCommand(s, m, commandText)
+					},
+				},
 			},
 		},
 		api: NewAPIClient(debugMode),
@@ -51,8 +59,27 @@ func NewPlugin(qilbot *bot.Qilbot) (plugin *Plugin) {
 
 	qilbot.AddCommand(&plugin.Commands[0])
 	qilbot.AddCommand(&plugin.Commands[1])
+	qilbot.AddCommand(&plugin.Commands[2])
 
 	return
+}
+
+func (plugin *Plugin) locateCommand(s *discordgo.Session, m *discordgo.MessageCreate, commandText string) {
+	var buffer bytes.Buffer
+
+	if cmdrPos, ok1 := plugin.api.GetPosition(commandText); ok1 == nil && cmdrPos.MSGNum == 100 {
+		logging.Trace.Println(fmt.Sprintf("%#v", cmdrPos))
+
+		header := fmt.Sprintf("Player is currently at **%s**", cmdrPos.System)
+
+		buffer.WriteString(header)
+
+		_, _ = s.ChannelMessageSend(m.ChannelID, buffer.String())
+	} else {
+		buffer.WriteString("Player not found.")
+
+		_, _ = s.ChannelMessageSend(m.ChannelID, buffer.String())
+	}
 }
 
 func (plugin *Plugin) sphereCommand(s *discordgo.Session, m *discordgo.MessageCreate, commandText string) {

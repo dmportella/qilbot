@@ -46,9 +46,9 @@ func (qilbot *Qilbot) discordCreateMessage(s *discordgo.Session, m *discordgo.Me
 
 	matches := utilities.RegexMatchBotCommand(m.Content)
 
-	logging.Info.Println(matches)
-
 	if len(matches) > 0 {
+		logging.Info.Println(matches)
+
 		commandCalled := matches[1]
 
 		if command, ok := qilbot.commands[commandCalled]; ok {

@@ -25,16 +25,16 @@ const (
 
 // Know endpoints for EDSM Log API
 const (
-	EndpointLogAPI = "api-logs-v1/"
+	EndpointLogAPI = EndpointEDSM + "api-logs-v1/"
 
-	EndpointLogGetPosition = "get-position"
-	EndpointLogGetLogs     = "get-logs"
+	EndpointLogGetPosition = EndpointLogAPI + "get-position"
 
-	EndpointLogSetLogs     = "set-logs"
-	EndpointLogDeleteLogs  = "delete-logs"
-	EndpointLogGetComments = "get-comments"
-	EndpointLogGetComment  = "get-comment"
-	EndpointLogSetComment  = "set-comment"
+	EndpointLogGetLogs     = EndpointLogAPI + "get-logs"
+	EndpointLogSetLogs     = EndpointLogAPI + "set-logs"
+	EndpointLogDeleteLogs  = EndpointLogAPI + "delete-logs"
+	EndpointLogGetComments = EndpointLogAPI + "get-comments"
+	EndpointLogGetComment  = EndpointLogAPI + "get-comment"
+	EndpointLogSetComment  = EndpointLogAPI + "set-comment"
 )
 
 // APIClient EDSM api client.
