@@ -77,7 +77,7 @@ func (qilbot *Qilbot) Stop() {
 	close(qilbot.stopChannel)
 }
 
-// AddPlugin Add a plugin to qilbot that will be initialised with a instance for the discord session.
+// AddPlugin Add a plugin to qilbot.
 func (qilbot *Qilbot) AddPlugin(plugin IPlugin) {
 	qilbot.Plugins = append(qilbot.Plugins, plugin)
 }
