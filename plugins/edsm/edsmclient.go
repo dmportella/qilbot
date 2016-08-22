@@ -4,11 +4,9 @@ import (
 	"time"
 )
 
-// Known endpoints for EDSM
+// Known endpoints for EDSM System and Distance API
 const (
 	EndpointEDSM = "https://www.edsm.net/"
-
-	EndpointStatus = EndpointEDSM + "api-status-v1/elite-server"
 
 	EndpointAPI = EndpointEDSM + "api-v1/"
 
@@ -18,6 +16,25 @@ const (
 	EndpointSphereSystems = EndpointAPI + "sphere-systems"
 
 	EndpointSubmitDistances = EndpointAPI + "submit-distances"
+)
+
+// Known endpoints for EDSM Status API
+const (
+	EndpointStatus = EndpointEDSM + "api-status-v1/elite-server"
+)
+
+// Know endpoints for EDSM Log API
+const (
+	EndpointLogAPI = "api-logs-v1/"
+
+	EndpointLogGetPosition = "get-position"
+	EndpointLogGetLogs     = "get-logs"
+
+	EndpointLogSetLogs     = "set-logs"
+	EndpointLogDeleteLogs  = "delete-logs"
+	EndpointLogGetComments = "get-comments"
+	EndpointLogGetComment  = "get-comment"
+	EndpointLogSetComment  = "set-comment"
 )
 
 // APIClient EDSM api client.
