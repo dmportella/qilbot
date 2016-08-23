@@ -5,7 +5,9 @@ REV?=$$(git rev-parse --short HEAD)
 BRANCH?=$$(git rev-parse --abbrev-ref HEAD)
 VERSION?="0.0.0"
 
-default: version fmt lint vet test
+default: lazy
+
+lazy: version fmt lint vet test
 
 # Git commands
 save:
