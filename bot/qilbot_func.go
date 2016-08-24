@@ -18,7 +18,7 @@ func New(config *QilbotConfig) (bot *Qilbot, err error) {
 
 	// Create a new Discord session using the provided login information.
 	if dg, ok := discordgo.New(bot.config.Email, bot.config.Password, bot.config.Token); ok != nil {
-		logging.Error.Println("Could not create discord session, ", err)
+		logging.Error.Println("Could not create discord session, ", ok)
 		err = ok
 	} else {
 		bot.session = dg
@@ -26,7 +26,7 @@ func New(config *QilbotConfig) (bot *Qilbot, err error) {
 
 	// Get the account information.
 	if u, ok := bot.session.User("@me"); ok != nil {
-		logging.Error.Println("Could not fetch bot account details, ", err)
+		logging.Error.Println("Could not fetch bot account details, ", ok)
 		err = ok
 	} else {
 		// store bot user id for later use.

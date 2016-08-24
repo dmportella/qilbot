@@ -13,9 +13,10 @@ import (
 
 // Set on build
 var (
-	Build    string
-	Branch   string
-	Revision string
+	Build		string
+	Branch		string
+	Revision	string
+	OSArch		string
 )
 
 // Variables used for command line parameters
@@ -64,7 +65,7 @@ func init() {
 }
 
 func main() {
-	fmt.Printf("Qilbot - Version: %s Branch: %s Revision: %s.\n\rDaniel Portella (c) 2016\n\r", Build, Branch, Revision)
+	fmt.Printf("Qilbot - Version: %s Branch: %s Revision: %s. OSArch: %s.\n\rDaniel Portella (c) 2016\n\r", Build, Branch, Revision, OSArch)
 
 	if Verbose {
 		logging.Init(os.Stdout, os.Stdout, os.Stdout, os.Stderr)

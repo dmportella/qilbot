@@ -4,6 +4,8 @@ GOFMT_FILES?=$$(find . -name '*.go' | grep -v vendor)
 REV?=$$(git rev-parse --short HEAD)
 BRANCH?=$$(git rev-parse --abbrev-ref HEAD)
 VERSION?="0.0.0"
+DOCKER_REPO?="dmportella/qilbot"
+TOKEN?=""
 
 default: lazy
 
@@ -46,13 +48,20 @@ tools:
 
 build: version test
 	@echo "GO BUILD..."
-	@go build -ldflags "-X main.Build=${VERSION} -X main.Revision=${REV} -X main.Branch=${BRANCH}" -v -o ./bin/qilbot .
+	@CGO_ENABLED=0 go build -ldflags "-s -X main.Build=${VERSION} -X main.Revision=${REV} -X main.Branch=${BRANCH}" -v -o ./bin/qilbot .
 
 buildonly:
-	@go build -ldflags "-X main.Build=${VERSION} -X main.Revision=${REV} -X main.Branch=${BRANCH}" -v -o ./bin/qilbot .	
+	@CGO_ENABLED=0 go build -ldflags "-s -X main.Build=${VERSION} -X main.Revision=${REV} -X main.Branch=${BRANCH}" -v -o ./bin/qilbot .	
 
 crosscompile: linux-build darwin-build freebsd-build windows-build tar-everything
 	@echo "crosscompile done..."
+
+docker: linux-build
+	@sudo docker build -t ${DOCKER_REPO}:${VERSION} -q --build-arg CONT_IMG_VER=${VERSION} --build-arg BINARY=bin/linux-amd64/qilbot .
+	@sudo docker tag ${DOCKER_REPO}:${VERSION} ${DOCKER_REPO}:latest
+
+docker-run:
+	@sudo docker run -it --rm --name qilbot dmportella/qilbot:latest -t ${TOKEN} -verbose
 
 tar-everything:
 	@echo "tar-everything..."
@@ -68,29 +77,29 @@ tar-everything:
 
 linux-build:
 	@echo "linux build... 386"
-	@GOOS=linux GOARCH=386 go build -ldflags "-X main.Build=${VERSION} -X main.Revision=${REV} -X main.Branch=${BRANCH}" -v -o ./bin/linux-386/qilbot . 2>/dev/null
+	@CGO_ENABLED=0 GOOS=linux GOARCH=386 go build -ldflags "-s -X main.Build=${VERSION} -X main.Revision=${REV} -X main.Branch=${BRANCH} -X main.OSArch=linux/386" -v -o ./bin/linux-386/qilbot . 2>/dev/null
 	@echo "linux build... amd64"
-	@GOOS=linux GOARCH=amd64 go build -ldflags "-X main.Build=${VERSION} -X main.Revision=${REV} -X main.Branch=${BRANCH}" -v -o ./bin/linux-amd64/qilbot . 2>/dev/null
+	@CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -ldflags "-s -X main.Build=${VERSION} -X main.Revision=${REV} -X main.Branch=${BRANCH} -X main.OSArch=linux/amd64" -v -o ./bin/linux-amd64/qilbot . 2>/dev/null
 	@echo "linux build... arm"
-	@GOOS=linux GOARCH=arm go build -ldflags "-X main.Build=${VERSION} -X main.Revision=${REV} -X main.Branch=${BRANCH}" -v -o ./bin/linux-arm/qilbot . 2>/dev/null
+	@CGO_ENABLED=0 GOOS=linux GOARCH=arm go build -ldflags "-s -X main.Build=${VERSION} -X main.Revision=${REV} -X main.Branch=${BRANCH} -X main.OSArch=linux/arm" -v -o ./bin/linux-arm/qilbot . 2>/dev/null
 
 darwin-build:
 	@echo "darwin build... 386"
-	@GOOS=darwin GOARCH=386 go build -ldflags "-X main.Build=${VERSION} -X main.Revision=${REV} -X main.Branch=${BRANCH}" -v -o ./bin/darwin-386/qilbot . 2>/dev/null
+	@CGO_ENABLED=0 GOOS=darwin GOARCH=386 go build -ldflags "-s -X main.Build=${VERSION} -X main.Revision=${REV} -X main.Branch=${BRANCH} -X main.OSArch=darwin/386" -v -o ./bin/darwin-386/qilbot . 2>/dev/null
 	@echo "darwin build... amd64"
-	@GOOS=darwin GOARCH=amd64 go build -ldflags "-X main.Build=${VERSION} -X main.Revision=${REV} -X main.Branch=${BRANCH}" -v -o ./bin/darwin-amd64/qilbot . 2>/dev/null
+	@CGO_ENABLED=0 GOOS=darwin GOARCH=amd64 go build -ldflags "-s -X main.Build=${VERSION} -X main.Revision=${REV} -X main.Branch=${BRANCH} -X main.OSArch=darwin/amd64" -v -o ./bin/darwin-amd64/qilbot . 2>/dev/null
 
 freebsd-build:
 	@echo "freebsd build... 386"
-	@GOOS=freebsd GOARCH=386 go build -ldflags "-X main.Build=${VERSION} -X main.Revision=${REV} -X main.Branch=${BRANCH}" -v -o ./bin/freebsd-386/qilbot . 2>/dev/null
+	@CGO_ENABLED=0 GOOS=freebsd GOARCH=386 go build -ldflags "-s -X main.Build=${VERSION} -X main.Revision=${REV} -X main.Branch=${BRANCH} -X main.OSArch=freebsd/386" -v -o ./bin/freebsd-386/qilbot . 2>/dev/null
 	@echo "freebsd build... amd64"
-	@GOOS=freebsd GOARCH=amd64 go build -ldflags "-X main.Build=${VERSION} -X main.Revision=${REV} -X main.Branch=${BRANCH}" -v -o ./bin/freebsd-amd64/qilbot . 2>/dev/null
+	@CGO_ENABLED=0 GOOS=freebsd GOARCH=amd64 go build -ldflags "-s -X main.Build=${VERSION} -X main.Revision=${REV} -X main.Branch=${BRANCH} -X main.OSArch=freebsd/amd64" -v -o ./bin/freebsd-amd64/qilbot . 2>/dev/null
 
 windows-build:
 	@echo "windows build... 386"
-	@GOOS=windows GOARCH=386 go build -ldflags "-X main.Build=${VERSION} -X main.Revision=${REV} -X main.Branch=${BRANCH}" -v -o ./bin/windows-386/qilbot.exe . 2>/dev/null
+	@CGO_ENABLED=0 GOOS=windows GOARCH=386 go build -ldflags "-s -X main.Build=${VERSION} -X main.Revision=${REV} -X main.Branch=${BRANCH} -X main.OSArch=windows/386" -v -o ./bin/windows-386/qilbot.exe . 2>/dev/null
 	@echo "windows build... amd64"
-	@GOOS=windows GOARCH=amd64 go build -ldflags "-X main.Build=${VERSION} -X main.Revision=${REV} -X main.Branch=${BRANCH}" -v -o ./bin/windows-amd64/qilbot.exe . 2>/dev/null
+	@CGO_ENABLED=0 GOOS=windows GOARCH=amd64 go build -ldflags "-s -X main.Build=${VERSION} -X main.Revision=${REV} -X main.Branch=${BRANCH} -X main.OSArch=windows/amd64" -v -o ./bin/windows-amd64/qilbot.exe . 2>/dev/null
 
 lint:
 	@echo "GO LINT..."
