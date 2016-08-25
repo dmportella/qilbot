@@ -4,6 +4,9 @@ language: go
 
 go:
   - tip
+
+services:
+  - docker
     
 script: make ci
 
@@ -35,3 +38,8 @@ deploy:
   on:
     repo: dmportella/qilbot
     tags: true
+
+after_deploy:
+  - "VERSION=${TRAVIS_TAG} make docker"
+  - "docker login -e $DOCKER_EMAIL -u $DOCKER_USERNAME -p $DOCKER_PASSWORD"
+  - "docker push dmportella/qilbot"
