@@ -13,7 +13,7 @@ import (
 func NewPlugin(qilbot *bot.Qilbot) (plugin *Plugin) {
 	const (
 		Name        = "Qilbot Common plugin"
-		Description = "Common plugin for qibot a place for generic commands."
+		Description = "Common plugin for qilbot a place for generic commands."
 	)
 
 	plugin = &Plugin{
