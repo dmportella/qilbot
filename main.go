@@ -13,10 +13,10 @@ import (
 
 // Set on build
 var (
-	Build		string
-	Branch		string
-	Revision	string
-	OSArch		string
+	Build    string
+	Branch   string
+	Revision string
+	OSArch   string
 )
 
 // Variables used for command line parameters

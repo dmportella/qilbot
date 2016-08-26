@@ -56,9 +56,14 @@ buildonly:
 crosscompile: linux-build darwin-build freebsd-build windows-build tar-everything
 	@echo "crosscompile done..."
 
-docker: linux-build
-	@sudo docker build -t ${DOCKER_REPO}:${VERSION} -q --build-arg CONT_IMG_VER=${VERSION} --build-arg BINARY=bin/linux-amd64/qilbot .
-	@sudo docker tag ${DOCKER_REPO}:${VERSION} ${DOCKER_REPO}:latest
+docker:
+	@if [ -e "bin/linux-amd64/qilbot" ]; then \
+		sudo docker build -t ${DOCKER_REPO}:${VERSION} -q --build-arg CONT_IMG_VER=${VERSION} --build-arg BINARY=bin/linux-amd64/qilbot . ; \
+		sudo docker tag ${DOCKER_REPO}:${VERSION} ${DOCKER_REPO}:latest ; \
+	else \
+		echo "Please run crosscompile before running docker command." ; \
+		exit 1 ; \
+	fi
 
 docker-run:
 	@sudo docker run -it --rm --name qilbot dmportella/qilbot:latest -t ${TOKEN} -verbose
