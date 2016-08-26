@@ -10,11 +10,10 @@ import (
 // New creates a new instance of Qilbot
 func New(config *QilbotConfig) (bot *Qilbot, err error) {
 	bot = &Qilbot{
-		config:			config,
-		Plugins:		[]IPlugin{},
-		stopChannel:	make(chan struct{}),
-		commands:		make(map[string]*CommandInformation),
-		variables:		make(map[string]string),
+		config:      config,
+		Plugins:     []IPlugin{},
+		stopChannel: make(chan struct{}),
+		commands:    make(map[string]*CommandInformation),
 	}
 
 	// Create a new Discord session using the provided login information.
