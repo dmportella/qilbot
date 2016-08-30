@@ -6,7 +6,95 @@
 		<language>en-GB</language>
 		<author>dmportella</author>
 		<rights>Copyright (c) 2016, dmportella; all rights reserved.</rights>
-		<updated>Tue, 30 Aug 2016 16:10:22 BST</updated>
+		<updated>Tue, 30 Aug 2016 16:44:25 BST</updated>
+		
+		<item>
+			<title>Creating a Discord Bot</title>
+			<link>https://dmportella.github.io/qilbot/docs/discord/creating-a-discord-bot/</link>
+			<pubDate>Tue, 30 Aug 2016 16:44:25 BST</pubDate>
+			<author>dmportella</author>
+			<guid>https://dmportella.github.io/qilbot/docs/discord/creating-a-discord-bot/</guid>
+			<description>
+
+&lt;h1 id=&#34;discord-bots&#34;&gt;Discord Bots&lt;/h1&gt;
+
+&lt;p&gt;This section desbribes the steps required to create a new discord application so we can associate Qilbot to it.&lt;/p&gt;
+
+&lt;h2 id=&#34;application-creation&#34;&gt;Application Creation&lt;/h2&gt;
+
+&lt;ol&gt;
+&lt;li&gt;Browse to &lt;a href=&#34;https://discordapp.com/developers/applications&#34;&gt;https://discordapp.com/developers/applications&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;Click &lt;code&gt;Create New Application&lt;/code&gt;&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;h2 id=&#34;creating-an-bot&#34;&gt;Creating an bot&lt;/h2&gt;
+
+&lt;ol&gt;
+&lt;li&gt;Click &lt;code&gt;My Applications&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;Give the Application a name (this will be the name of the Bot).&lt;/li&gt;
+&lt;li&gt;Click &lt;code&gt;Create Application&lt;/code&gt;.&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;&lt;img src=&#34;http://i.imgur.com/O216xc5.png&#34; alt=&#34;Step One&#34; /&gt;&lt;/p&gt;
+
+&lt;ol&gt;
+&lt;li&gt;This is your application &lt;code&gt;ID&lt;/code&gt; you will need this for later.
+
+&lt;ul&gt;
+&lt;li&gt;Application Id is used to add your bot to a discord server.&lt;/li&gt;
+&lt;/ul&gt;&lt;/li&gt;
+&lt;li&gt;This is the secret for you application &lt;em&gt;dont share this with anyone&lt;/em&gt;.&lt;/li&gt;
+&lt;li&gt;Click &lt;code&gt;Create a Bot user&lt;/code&gt;
+
+&lt;ul&gt;
+&lt;li&gt;An dialog will open asking if you are really sure you want todo this just say yes.&lt;/li&gt;
+&lt;/ul&gt;&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;&lt;img src=&#34;http://i.imgur.com/fgT59FI.png&#34; alt=&#34;Step Two&#34; /&gt;&lt;/p&gt;
+
+&lt;ol&gt;
+&lt;li&gt;Once the bot is created click the &lt;code&gt;Reveal Token&lt;/code&gt; link&lt;/li&gt;
+&lt;li&gt;Make note of the token presented to you.
+
+&lt;ul&gt;
+&lt;li&gt;This token is what we pass to &lt;code&gt;qilbot&lt;/code&gt; as the token parameter.&lt;/li&gt;
+&lt;/ul&gt;&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;&lt;img src=&#34;http://i.imgur.com/eD0aUBZ.png&#34; alt=&#34;Step Two&#34; /&gt;&lt;/p&gt;
+</description>
+		</item>
+		
+		<item>
+			<title>Adding a Bot to a Guild</title>
+			<link>https://dmportella.github.io/qilbot/docs/discord/adding-bot-to-guild/</link>
+			<pubDate>Tue, 30 Aug 2016 16:43:03 BST</pubDate>
+			<author>dmportella</author>
+			<guid>https://dmportella.github.io/qilbot/docs/discord/adding-bot-to-guild/</guid>
+			<description>
+
+&lt;h1 id=&#34;adding-bot-to-a-server&#34;&gt;Adding bot to a server&lt;/h1&gt;
+
+&lt;ol&gt;
+&lt;li&gt;Get your &lt;code&gt;ApplicationID&lt;/code&gt;.&lt;/li&gt;
+&lt;li&gt;Replace the APPID from the link below.
+
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&#34;https://discordapp.com/oauth2/authorize?scope=bot&amp;amp;permissions=0&amp;amp;client_id=APPID&#34;&gt;https://discordapp.com/oauth2/authorize?scope=bot&amp;amp;permissions=0&amp;amp;client_id=APPID&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;The link above gives the bot the lowest level of permissions. Currently &lt;code&gt;Qilbot&lt;/code&gt; doesn&amp;rsquo;t require higher levels for more information about permissions check: &lt;a href=&#34;https://discordapp.com/developers/docs/topics/permissions#bitwise-permission-flags&#34;&gt;Discord Permissions&lt;/a&gt; - this however may change in the future.&lt;/li&gt;
+&lt;/ul&gt;&lt;/li&gt;
+&lt;li&gt;Visiting this URL you will see the page below.
+
+&lt;ul&gt;
+&lt;li&gt;Select which server you want your bot be and press authorise.&lt;/li&gt;
+&lt;li&gt;All done&lt;/li&gt;
+&lt;/ul&gt;&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;&lt;img src=&#34;http://i.imgur.com/z5K2JU7.png&#34; alt=&#34;Adding Bot&#34; /&gt;&lt;/p&gt;
+</description>
+		</item>
 		
 		<item>
 			<title>Docker Setup</title>
