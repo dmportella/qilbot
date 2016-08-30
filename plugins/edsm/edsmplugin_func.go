@@ -70,13 +70,19 @@ func (plugin *Plugin) locateCommand(s *discordgo.Session, m *discordgo.MessageCr
 	if cmdrPos, ok1 := plugin.api.GetPosition(commandText); ok1 == nil && cmdrPos.MSGNum == 100 {
 		logging.Trace.Println(fmt.Sprintf("%#v", cmdrPos))
 
-		header := fmt.Sprintf("Player is currently at **%s**", cmdrPos.System)
+		var header string
+
+		if cmdrPos.System == "" {
+			header = fmt.Sprintf("Player was found but he or she may not be sharing their location publicly.\r\nThe commander in question should check their settings in EDSM.")
+		} else {
+			header = fmt.Sprintf("Player is currently at **%s**", cmdrPos.System)
+		}
 
 		buffer.WriteString(header)
 
 		_, _ = s.ChannelMessageSend(m.ChannelID, buffer.String())
 	} else {
-		buffer.WriteString("Player not found.")
+		buffer.WriteString("Player not found, the commander doesn't exist or they have not registered with EDSM.")
 
 		_, _ = s.ChannelMessageSend(m.ChannelID, buffer.String())
 	}
@@ -162,11 +168,11 @@ func (plugin *Plugin) getDistanceBetweenTwoSystems(systemName1 string, systemNam
 			distance = calculateDistance(sys1.Coords, sys2.Coords)
 		} else {
 			logging.Trace.Println(ok2)
-			err = fmt.Errorf("EDSM couldn't fetch information about %s system", systemName2)
+			err = fmt.Errorf("EDSM couldn't fetch information about **%s** system, please check the spelling", systemName2)
 		}
 	} else {
 		logging.Trace.Println(ok1)
-		err = fmt.Errorf("EDSM couldn't fetch information about %s system", systemName1)
+		err = fmt.Errorf("EDSM couldn't fetch information about **%s** system, please check the spelling", systemName1)
 	}
 	return
 }
@@ -177,7 +183,7 @@ func (plugin *Plugin) getSphereSystems(systemName1 string, distance string) (sys
 			systems = sysList
 		} else {
 			logging.Trace.Println(ok2)
-			err = fmt.Errorf("EDSM couldn't fetch information about %s system", systemName1)
+			err = fmt.Errorf("EDSM couldn't fetch information about **%s** system, please check the spelling", systemName1)
 		}
 	} else {
 		logging.Trace.Println(ok1)

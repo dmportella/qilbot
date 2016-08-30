@@ -101,5 +101,8 @@ func (plugin *Plugin) setCommand(s *discordgo.Session, m *discordgo.MessageCreat
 	if guild.OwnerID != m.Author.ID {
 		buffer.WriteString("Only the Server owner can change the bot settings...")
 		_, _ = s.ChannelMessageSend(m.ChannelID, buffer.String())
+	} else {
+		buffer.WriteString("This would have done something.")
+		_, _ = s.ChannelMessageSend(m.ChannelID, buffer.String())
 	}
 }
