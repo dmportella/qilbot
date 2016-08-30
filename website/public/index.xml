@@ -6,7 +6,23 @@
 		<language>en-GB</language>
 		<author>dmportella</author>
 		<rights>Copyright (c) 2016, dmportella; all rights reserved.</rights>
-		<updated>Fri, 05 Aug 2016 11:35:48 BST</updated>
+		<updated>Tue, 30 Aug 2016 16:10:22 BST</updated>
+		
+		<item>
+			<title>Docker Setup</title>
+			<link>https://dmportella.github.io/qilbot/docs/docker/</link>
+			<pubDate>Tue, 30 Aug 2016 16:10:22 BST</pubDate>
+			<author>dmportella</author>
+			<guid>https://dmportella.github.io/qilbot/docs/docker/</guid>
+			<description>
+
+&lt;h1 id=&#34;docker&#34;&gt;Docker&lt;/h1&gt;
+
+&lt;h2 id=&#34;docker-hub&#34;&gt;Docker Hub&lt;/h2&gt;
+
+&lt;p&gt;&lt;code&gt;sudo docker run --rm -v /etc/ssl/certs/:/etc/ssl/certs/ --name qilbot dmportella/qilbot:latest -t jwt.token.code -verbose&lt;/code&gt;&lt;/p&gt;
+</description>
+		</item>
 		
 		<item>
 			<title>index</title>
@@ -16,9 +32,11 @@
 			<guid>https://dmportella.github.io/qilbot/docs/discord/</guid>
 			<description>
 
-&lt;h3 id=&#34;section-x&#34;&gt;Section X&lt;/h3&gt;
+&lt;h1 id=&#34;discord&#34;&gt;Discord&lt;/h1&gt;
 
-&lt;h1 id=&#34;section-header&#34;&gt;Section Header&lt;/h1&gt;
+&lt;h2 id=&#34;creating-a-bot&#34;&gt;Creating a bot&lt;/h2&gt;
+
+&lt;h2 id=&#34;registering-a-bot&#34;&gt;Registering a bot&lt;/h2&gt;
 
 &lt;p&gt;Some text&lt;/p&gt;
 </description>
@@ -30,7 +48,8 @@
 			<pubDate>Fri, 05 Aug 2016 11:33:43 BST</pubDate>
 			<author>dmportella</author>
 			<guid>https://dmportella.github.io/qilbot/contact/</guid>
-			<description></description>
+			<description>&lt;p&gt;Contact page&lt;/p&gt;
+</description>
 		</item>
 		
 		<item>
@@ -41,9 +60,11 @@
 			<guid>https://dmportella.github.io/qilbot/docs/</guid>
 			<description>
 
-&lt;h3 id=&#34;section-x&#34;&gt;Section X&lt;/h3&gt;
+&lt;h1 id=&#34;documentation&#34;&gt;Documentation&lt;/h1&gt;
 
-&lt;h1 id=&#34;section-header&#34;&gt;Section Header&lt;/h1&gt;
+&lt;h2 id=&#34;discord&#34;&gt;Discord&lt;/h2&gt;
+
+&lt;h2 id=&#34;docker&#34;&gt;Docker&lt;/h2&gt;
 
 &lt;p&gt;Some text&lt;/p&gt;
 </description>

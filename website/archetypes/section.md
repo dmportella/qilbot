@@ -1,11 +1,11 @@
 ---
 title: "Section Title"
 section: true
-draft: true
+draft: false
 ---
 
-### Section X
+# Section X
 
-# Section Header
+## Section Header
 
 Some text

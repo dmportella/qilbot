@@ -6,8 +6,10 @@ title: "index"
 
 ---
 
-### Section X
+# Discord
 
-# Section Header
+## Creating a bot
+
+## Registering a bot
 
 Some text
