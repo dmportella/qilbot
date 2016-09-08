@@ -21,7 +21,7 @@ func New(config *QilbotConfig) (bot *Qilbot, err error) {
 		logging.Error.Println("Could not create discord session, ", ok)
 		err = ok
 	} else {
-		bot.session = dg
+		bot.session = &DiscordSession{dg}
 	}
 
 	// Get the account information.
@@ -52,7 +52,7 @@ func (qilbot *Qilbot) discordCreateMessage(s *discordgo.Session, m *discordgo.Me
 		commandCalled := matches[1]
 
 		if command, ok := qilbot.commands[commandCalled]; ok {
-			go command.Execute(s, m, matches[2])
+			go command.Execute(qilbot.session, m, matches[2])
 		}
 	}
 }

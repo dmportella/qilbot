@@ -1,7 +1,5 @@
 package bot
 
-import "github.com/bwmarrin/discordgo"
-
 // Qilbot representation of the instance of qilbot.
 type Qilbot struct {
 	// Publics
@@ -13,7 +11,7 @@ type Qilbot struct {
 
 	stopChannel chan struct{}
 	config      *QilbotConfig
-	session     *discordgo.Session
+	session     *DiscordSession
 	commands    map[string]*CommandInformation
 }
 

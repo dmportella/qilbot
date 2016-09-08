@@ -30,7 +30,7 @@ func NewPlugin(qilbot *bot.Qilbot) (plugin *Plugin) {
 					Command:     "distance",
 					Template:    "distance **sys1** / **sys2**",
 					Description: "Uses the coords in EDSM to calculate the distance between the two star systems.",
-					Execute: func(s *discordgo.Session, m *discordgo.MessageCreate, commandText string) {
+					Execute: func(s *bot.DiscordSession, m *discordgo.MessageCreate, commandText string) {
 						plugin.distanceCommand(s, m, commandText)
 					},
 				},
@@ -38,7 +38,7 @@ func NewPlugin(qilbot *bot.Qilbot) (plugin *Plugin) {
 					Command:     "sphere",
 					Template:    "sphere **sys1** 14.33ly",
 					Description: "Returns a list of systems within a specified distance to specified system.",
-					Execute: func(s *discordgo.Session, m *discordgo.MessageCreate, commandText string) {
+					Execute: func(s *bot.DiscordSession, m *discordgo.MessageCreate, commandText string) {
 						plugin.sphereCommand(s, m, commandText)
 					},
 				},
@@ -46,7 +46,7 @@ func NewPlugin(qilbot *bot.Qilbot) (plugin *Plugin) {
 					Command:     "locate",
 					Template:    "locate **Commander Name**",
 					Description: "Returns the location of a commander in EDSM.",
-					Execute: func(s *discordgo.Session, m *discordgo.MessageCreate, commandText string) {
+					Execute: func(s *bot.DiscordSession, m *discordgo.MessageCreate, commandText string) {
 						plugin.locateCommand(s, m, commandText)
 					},
 				},
@@ -64,7 +64,7 @@ func NewPlugin(qilbot *bot.Qilbot) (plugin *Plugin) {
 	return
 }
 
-func (plugin *Plugin) locateCommand(s *discordgo.Session, m *discordgo.MessageCreate, commandText string) {
+func (plugin *Plugin) locateCommand(s *bot.DiscordSession, m *discordgo.MessageCreate, commandText string) {
 	var buffer bytes.Buffer
 
 	if cmdrPos, ok1 := plugin.api.GetPosition(commandText); ok1 == nil && cmdrPos.MSGNum == 100 {
@@ -88,7 +88,7 @@ func (plugin *Plugin) locateCommand(s *discordgo.Session, m *discordgo.MessageCr
 	}
 }
 
-func (plugin *Plugin) sphereCommand(s *discordgo.Session, m *discordgo.MessageCreate, commandText string) {
+func (plugin *Plugin) sphereCommand(s *bot.DiscordSession, m *discordgo.MessageCreate, commandText string) {
 	placeMatches := regexMatchSphereCommand(commandText)
 
 	logging.Trace.Println(placeMatches)
@@ -142,7 +142,7 @@ func (plugin *Plugin) sphereCommand(s *discordgo.Session, m *discordgo.MessageCr
 	}
 }
 
-func (plugin *Plugin) distanceCommand(s *discordgo.Session, m *discordgo.MessageCreate, commandText string) {
+func (plugin *Plugin) distanceCommand(s *bot.DiscordSession, m *discordgo.MessageCreate, commandText string) {
 	placeMatches := regexMatchDistanceCommand(commandText)
 
 	if len(placeMatches) >= 3 {

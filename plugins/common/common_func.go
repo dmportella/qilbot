@@ -26,7 +26,7 @@ func NewPlugin(qilbot *bot.Qilbot) (plugin *Plugin) {
 					Command:     "plugins",
 					Template:    "plugins",
 					Description: "Display a list of plugins enabled on qilbot.",
-					Execute: func(s *discordgo.Session, m *discordgo.MessageCreate, commandText string) {
+					Execute: func(s *bot.DiscordSession, m *discordgo.MessageCreate, commandText string) {
 						plugin.pluginsCommand(s, m, commandText)
 					},
 				},
@@ -34,7 +34,7 @@ func NewPlugin(qilbot *bot.Qilbot) (plugin *Plugin) {
 					Command:     "help",
 					Template:    "!help or !help *command*",
 					Description: "Display a list of commands available to qilbot and more information about specific commands.",
-					Execute: func(s *discordgo.Session, m *discordgo.MessageCreate, commandText string) {
+					Execute: func(s *bot.DiscordSession, m *discordgo.MessageCreate, commandText string) {
 						plugin.helpCommand(s, m, commandText)
 					},
 				},
@@ -42,7 +42,7 @@ func NewPlugin(qilbot *bot.Qilbot) (plugin *Plugin) {
 					Command:     "set",
 					Template:    "!set *variable* on|off",
 					Description: "Changes the settings of qilbot at runtime.",
-					Execute: func(s *discordgo.Session, m *discordgo.MessageCreate, commandText string) {
+					Execute: func(s *bot.DiscordSession, m *discordgo.MessageCreate, commandText string) {
 						plugin.setCommand(s, m, commandText)
 					},
 				},
@@ -59,7 +59,7 @@ func NewPlugin(qilbot *bot.Qilbot) (plugin *Plugin) {
 	return
 }
 
-func (plugin *Plugin) helpCommand(s *discordgo.Session, m *discordgo.MessageCreate, commandText string) {
+func (plugin *Plugin) helpCommand(s *bot.DiscordSession, m *discordgo.MessageCreate, commandText string) {
 	var buffer bytes.Buffer
 
 	logging.Info.Println("comand text", commandText)
@@ -83,7 +83,7 @@ func (plugin *Plugin) helpCommand(s *discordgo.Session, m *discordgo.MessageCrea
 	_, _ = s.ChannelMessageSend(channel.ID, buffer.String())
 }
 
-func (plugin *Plugin) pluginsCommand(s *discordgo.Session, m *discordgo.MessageCreate, commandText string) {
+func (plugin *Plugin) pluginsCommand(s *bot.DiscordSession, m *discordgo.MessageCreate, commandText string) {
 	var buffer bytes.Buffer
 	for _, item := range plugin.Plugin.Qilbot.Plugins {
 		buffer.WriteString(item.GetHelpText() + "\n")
@@ -91,18 +91,14 @@ func (plugin *Plugin) pluginsCommand(s *discordgo.Session, m *discordgo.MessageC
 	_, _ = s.ChannelMessageSend(m.ChannelID, buffer.String())
 }
 
-func (plugin *Plugin) setCommand(s *discordgo.Session, m *discordgo.MessageCreate, commandText string) {
+func (plugin *Plugin) setCommand(s *bot.DiscordSession, m *discordgo.MessageCreate, commandText string) {
 	var buffer bytes.Buffer
 
-	channel, _ := s.Channel(m.ChannelID)
-
-	guild, _ := s.Guild(channel.GuildID)
-
-	if guild.OwnerID != m.Author.ID {
-		buffer.WriteString("Only the Server owner can change the bot settings...")
+	if s.IsOwnerOfGuild(m) {
+		buffer.WriteString("This would have done something.")
 		_, _ = s.ChannelMessageSend(m.ChannelID, buffer.String())
 	} else {
-		buffer.WriteString("This would have done something.")
+		buffer.WriteString("Only the Server owner can change the bot settings...")
 		_, _ = s.ChannelMessageSend(m.ChannelID, buffer.String())
 	}
 }
