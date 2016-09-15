@@ -52,7 +52,7 @@ func NewPlugin(qilbot *bot.Qilbot) (plugin *Plugin) {
 				},
 			},
 		},
-		api: NewAPIClient(debugMode),
+		api: NewAPIClient(debugMode, "Discord Bot (https://github.com/dmportella/qilbot, 0.0.0)"),
 	}
 
 	qilbot.AddPlugin(plugin)

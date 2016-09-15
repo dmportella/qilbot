@@ -7,6 +7,7 @@ import (
 	"github.com/dmportella/qilbot/logging"
 	"github.com/dmportella/qilbot/plugins/common"
 	"github.com/dmportella/qilbot/plugins/edsm"
+	"github.com/dmportella/qilbot/plugins/wow"
 	"io/ioutil"
 	"os"
 )
@@ -90,6 +91,8 @@ func main() {
 		Debug:    Verbose,
 	}
 
+	fmt.Println(botConfig.Token)
+
 	bot, ok := bot.New(&botConfig)
 
 	if ok != nil {
@@ -114,6 +117,10 @@ func loadPlugins() {
 	edsmPlugin := edsm.NewPlugin(&botInstance)
 
 	logging.Info.Println(edsmPlugin.GetHelpText())
+
+	wowPlugin := wow.NewPlugin(&botInstance)
+
+	logging.Info.Println(wowPlugin.GetHelpText())
 }
 
 func startbot() {

@@ -30,15 +30,15 @@ var (
 
 // NewAPIClient created an instance of APIClient
 // debug: tells APIClient if it should be running in debug mode.
-func NewAPIClient(debug bool) APIClient {
-	return APIClient{Debug: debug}
+func NewAPIClient(debug bool, userAgent string) APIClient {
+	return APIClient{Debug: debug, UserAgent: userAgent}
 }
 
 func (client *APIClient) request(method string, url string, b []byte) (response []byte, err error) {
 	req, err := http.NewRequest(method, url, bytes.NewBuffer(b))
 
 	req.Header.Set("accept", "application/json; charset=utf-8")
-	req.Header.Set("User-Agent", "Discord Bot (https://github.com/dmportella/qilbot, 0.0.0)")
+	req.Header.Set("User-Agent", client.UserAgent)
 
 	httpClient := &http.Client{Timeout: (120 * time.Second)}
 

@@ -39,7 +39,8 @@ const (
 
 // APIClient EDSM api client.
 type APIClient struct {
-	Debug bool
+	Debug     bool
+	UserAgent string
 }
 
 // APIStatus represents the status response of edsm api status call.
