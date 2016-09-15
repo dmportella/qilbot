@@ -14,7 +14,7 @@ lazy: version fmt lint vet test
 # Git commands
 save:
 	@git add -A
-	@git commit
+	@git commit -S
 	@git status
 
 push:
