@@ -66,7 +66,7 @@ docker:
 	fi
 
 docker-run:
-	@sudo docker run -it --rm --name qilbot dmportella/qilbot:latest -t ${TOKEN} -verbose
+	@sudo docker run -it --rm -v /etc/ssl/certs/:/etc/ssl/certs/ --name qilbot dmportella/qilbot:latest -t ${TOKEN} -verbose
 
 tar-everything:
 	@echo "tar-everything..."
