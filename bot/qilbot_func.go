@@ -21,7 +21,7 @@ func New(config *QilbotConfig) (bot *Qilbot, err error) {
 		logging.Error.Println("Could not create discord session, ", ok)
 		err = ok
 	} else {
-		bot.session = &DiscordSession{dg}
+		bot.session = &DiscordSession{dg, false, false, ""}
 	}
 
 	// Get the account information.

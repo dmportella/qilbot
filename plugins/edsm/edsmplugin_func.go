@@ -84,7 +84,7 @@ func (plugin *Plugin) locateCommand(s *bot.DiscordSession, m *discordgo.MessageC
 	} else {
 		buffer.WriteString("Player not found, the commander doesn't exist or they have not registered with EDSM.")
 
-		_, _ = s.ChannelMessageSend(m.ChannelID, buffer.String())
+		s.RespondToUser(m, buffer.String())
 	}
 }
 
@@ -124,20 +124,23 @@ func (plugin *Plugin) sphereCommand(s *bot.DiscordSession, m *discordgo.MessageC
 				if buffer.Len() > 8388608 {
 					logging.Trace.Println("msg large", buffer.Len())
 
-					_, _ = s.ChannelMessageSend(m.ChannelID, "Response is too large for discord please narrow you search.")
+					s.RespondToUser(m, "Response is too large for discord please narrow you search.")
 				} else if buffer.Len() > 2000 {
 					logging.Trace.Println("msg attach", buffer.Len())
+
 					reader := bytes.NewReader(buffer.Bytes())
+
 					_, _ = s.ChannelFileSendWithMessage(m.ChannelID, header, "Results.txt", reader)
 				} else {
 					logging.Trace.Println("msg oke", buffer.Len())
-					_, _ = s.ChannelMessageSend(m.ChannelID, buffer.String())
+
+					s.RespondToUser(m, buffer.String())
 				}
 			} else {
-				_, _ = s.ChannelMessageSend(m.ChannelID, ok2.Error())
+				s.RespondToUser(m, ok2.Error())
 			}
 		} else {
-			_, _ = s.ChannelMessageSend(m.ChannelID, ok1.Error())
+			s.RespondToUser(m, ok1.Error())
 		}
 	}
 }
@@ -152,13 +155,14 @@ func (plugin *Plugin) distanceCommand(s *bot.DiscordSession, m *discordgo.Messag
 		s.ChannelTyping(m.ChannelID)
 
 		if distance, err := plugin.getDistanceBetweenTwoSystems(sys1, sys2); err == nil {
-			_, _ = s.ChannelMessageSend(m.ChannelID, fmt.Sprintf("The distance between **%s** and **%s** is **%.2fly**.", sys1, sys2, distance))
+			s.RespondToUser(m, fmt.Sprintf("The distance between **%s** and **%s** is **%.2fly**.", sys1, sys2, distance))
 		} else {
 			logging.Trace.Println(err)
-			_, _ = s.ChannelMessageSend(m.ChannelID, err.Error())
+
+			s.RespondToUser(m, err.Error())
 		}
 	} else {
-		_, _ = s.ChannelMessageSend(m.ChannelID, "Please give me two places, format: distance **A** / **B**")
+		s.RespondToUser(m, "Please give me two places, format: distance **A** / **B**")
 	}
 }
 

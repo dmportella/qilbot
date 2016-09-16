@@ -40,10 +40,18 @@ func NewPlugin(qilbot *bot.Qilbot) (plugin *Plugin) {
 				},
 				{
 					Command:     "set",
-					Template:    "!set *variable* on|off",
+					Template:    "!set *variable* *value*",
 					Description: "Changes the settings of qilbot at runtime.",
 					Execute: func(s *bot.DiscordSession, m *discordgo.MessageCreate, commandText string) {
 						plugin.setCommand(s, m, commandText)
+					},
+				},
+				{
+					Command:     "get",
+					Template:    "!get-variables",
+					Description: "Returns a list of available settings on Qilbot.",
+					Execute: func(s *bot.DiscordSession, m *discordgo.MessageCreate, commandText string) {
+						plugin.getCommand(s, m, commandText)
 					},
 				},
 			},
@@ -76,19 +84,17 @@ func (plugin *Plugin) helpCommand(s *bot.DiscordSession, m *discordgo.MessageCre
 		}
 	}
 
-	channel, _ := s.UserChannelCreate(m.Author.ID)
-
-	logging.Trace.Println(channel)
-
-	_, _ = s.ChannelMessageSend(channel.ID, buffer.String())
+	s.RespondToUser(m, buffer.String())
 }
 
 func (plugin *Plugin) pluginsCommand(s *bot.DiscordSession, m *discordgo.MessageCreate, commandText string) {
 	var buffer bytes.Buffer
+
 	for _, item := range plugin.Plugin.Qilbot.Plugins {
 		buffer.WriteString(item.GetHelpText() + "\n")
 	}
-	_, _ = s.ChannelMessageSend(m.ChannelID, buffer.String())
+
+	s.RespondToUser(m, buffer.String())
 }
 
 func (plugin *Plugin) setCommand(s *bot.DiscordSession, m *discordgo.MessageCreate, commandText string) {
@@ -96,9 +102,21 @@ func (plugin *Plugin) setCommand(s *bot.DiscordSession, m *discordgo.MessageCrea
 
 	if s.IsOwnerOfGuild(m) {
 		buffer.WriteString("This would have done something.")
-		_, _ = s.ChannelMessageSend(m.ChannelID, buffer.String())
 	} else {
 		buffer.WriteString("Only the Server owner can change the bot settings...")
-		_, _ = s.ChannelMessageSend(m.ChannelID, buffer.String())
 	}
+
+	s.RespondToUser(m, buffer.String())
+}
+
+func (plugin *Plugin) getCommand(s *bot.DiscordSession, m *discordgo.MessageCreate, commandText string) {
+	var buffer bytes.Buffer
+
+	if s.IsOwnerOfGuild(m) {
+		buffer.WriteString("This would have done something.")
+	} else {
+		buffer.WriteString("Only the Server owner can change the bot settings...")
+	}
+
+	s.RespondToUser(m, buffer.String())
 }

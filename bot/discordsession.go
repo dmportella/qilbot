@@ -8,4 +8,8 @@ import (
 // This allows us to decorate inject methods into discordgo.Session object.
 type DiscordSession struct {
 	*discordgo.Session
+
+	onlyReplyWithDirectMessages bool
+	onlyReplyInSpecificChannel  bool
+	botChannelID                string
 }

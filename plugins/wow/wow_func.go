@@ -46,5 +46,5 @@ func (plugin *Plugin) armoryCommand(s *bot.DiscordSession, m *discordgo.MessageC
 
 	buffer.WriteString("This will give you armory link and all stuff you like")
 
-	_, _ = s.ChannelMessageSend(m.ChannelID, buffer.String())
+	s.RespondToUser(m, buffer.String())
 }
