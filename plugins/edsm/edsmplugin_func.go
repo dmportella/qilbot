@@ -14,7 +14,7 @@ import (
 // NewPlugin creates a new instance of EDSMPlugin.
 func NewPlugin(qilbot *bot.Qilbot) (plugin *Plugin) {
 	const (
-		Name        = "EDSM Plugin"
+		Name        = "Qilbot EDSM Plugin"
 		Description = "Client plugin for Elite Dangerous Star Map web site."
 	)
 
