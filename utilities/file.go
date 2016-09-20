@@ -3,6 +3,7 @@ package utilities
 import (
 	"io/ioutil"
 	"os"
+	"path/filepath"
 )
 
 // DefaultPermissions Permissions for file and directory creations.
@@ -20,6 +21,12 @@ func FileOrDirectoryExists(path string) (bool, error) {
 		return false, nil
 	}
 	return true, err
+}
+
+// GetCurrentFolder Returns the
+func GetCurrentFolder() (string, error) {
+	dir, err := filepath.Abs(filepath.Dir(os.Args[0]))
+	return dir, err
 }
 
 // SaveToFile Saves a byte array to a path.

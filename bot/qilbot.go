@@ -9,10 +9,11 @@ type Qilbot struct {
 
 	// Privates
 
-	stopChannel chan struct{}
-	config      *QilbotConfig
-	session     *DiscordSession
-	commands    map[string]*CommandInformation
+	stopChannel     chan struct{}
+	config          *QilbotConfig
+	session         *DiscordSession
+	commands        map[string]*CommandInformation
+	commandSettings map[string]*commandSettings
 }
 
 // QilbotConfig representation of the configuration for qilbot.
