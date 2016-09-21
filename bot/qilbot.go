@@ -4,11 +4,11 @@ package bot
 type Qilbot struct {
 	// Publics
 
-	BotID   string
 	Plugins []IPlugin
 
 	// Privates
 
+	botID           string
 	stopChannel     chan struct{}
 	config          *QilbotConfig
 	session         *DiscordSession

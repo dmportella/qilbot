@@ -33,3 +33,12 @@ func GetCurrentFolder() (string, error) {
 func SaveToFile(data []byte, path string) error {
 	return ioutil.WriteFile(path, data, DefaultPermissions)
 }
+
+// ReadFromFile Safe reads file content.
+func ReadFromFile(filepath string) ([]byte, error) {
+	if ok, err := FileOrDirectoryExists(filepath); err != nil || !ok {
+		return nil, err
+	}
+
+	return ioutil.ReadFile(filepath)
+}

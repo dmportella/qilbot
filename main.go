@@ -10,6 +10,7 @@ import (
 	"github.com/dmportella/qilbot/plugins/wow"
 	"io/ioutil"
 	"os"
+	"os/signal"
 )
 
 // Set on build
@@ -91,8 +92,6 @@ func main() {
 		Debug:    Verbose,
 	}
 
-	fmt.Println(botConfig.Token)
-
 	bot, ok := bot.New(&botConfig)
 
 	if ok != nil {
@@ -104,6 +103,20 @@ func main() {
 	loadPlugins()
 
 	go startbot()
+
+	c := make(chan os.Signal, 1)
+	signal.Notify(c, os.Interrupt)
+	go func() {
+		for sig := range c {
+			if sig.String() == "interrupt" {
+				logging.Info.Printf("Application ended on %s\n\r", sig)
+
+				bot.Stop()
+
+				os.Exit(0)
+			}
+		}
+	}()
 
 	// Simple way to keep program running until CTRL-C is pressed.
 	<-make(chan struct{})
