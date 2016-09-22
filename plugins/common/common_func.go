@@ -46,14 +46,6 @@ func NewPlugin(qilbot *bot.Qilbot) (plugin *Plugin) {
 						plugin.setCommand(s, m, commandText)
 					},
 				},
-				{
-					Command:     "get",
-					Template:    "!get-variables",
-					Description: "Returns a list of available settings on Qilbot.",
-					Execute: func(s *bot.DiscordSession, m *discordgo.MessageCreate, commandText string) {
-						plugin.getCommand(s, m, commandText)
-					},
-				},
 			},
 		},
 	}
@@ -98,18 +90,6 @@ func (plugin *Plugin) pluginsCommand(s *bot.DiscordSession, m *discordgo.Message
 }
 
 func (plugin *Plugin) setCommand(s *bot.DiscordSession, m *discordgo.MessageCreate, commandText string) {
-	var buffer bytes.Buffer
-
-	if s.IsOwnerOfGuild(m) {
-		buffer.WriteString("This would have done something.")
-	} else {
-		buffer.WriteString("Only the Server owner can change the bot settings...")
-	}
-
-	s.RespondToUser(m, buffer.String())
-}
-
-func (plugin *Plugin) getCommand(s *bot.DiscordSession, m *discordgo.MessageCreate, commandText string) {
 	var buffer bytes.Buffer
 
 	if s.IsOwnerOfGuild(m) {
