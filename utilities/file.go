@@ -8,7 +8,7 @@ import (
 
 // DefaultPermissions Permissions for file and directory creations.
 const (
-	DefaultPermissions = 644
+	DefaultPermissions = 0666
 )
 
 // FileOrDirectoryExists Check is a file or directory exists.

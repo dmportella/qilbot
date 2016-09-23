@@ -2,49 +2,47 @@ package wow
 
 import (
 	"bytes"
-	"github.com/bwmarrin/discordgo"
 	"github.com/dmportella/qilbot/bot"
 	"github.com/dmportella/qilbot/logging"
 )
 
+const (
+	name        = "Qilbot World of Warcraft plugin"
+	description = "A collection of tools and commands for the World of Warcraft API."
+)
+
 // NewPlugin creates a new instance of WOW Plugin.
 func NewPlugin(qilbot *bot.Qilbot) (plugin *Plugin) {
-	const (
-		Name        = "Qilbot World of Warcraft plugin"
-		Description = "A collection of tools and commands for the World of Warcraft API."
-	)
+	plugin = &Plugin{}
 
-	plugin = &Plugin{
-		bot.Plugin{
-			Qilbot:      qilbot,
-			Name:        Name,
-			Description: Description,
-			Commands: []bot.CommandInformation{
-				{
-					Command:     "armory",
-					Template:    "armory **item name**",
-					Description: "Search the armory for items.",
-					Execute: func(s *bot.DiscordSession, m *discordgo.MessageCreate, commandText string) {
-						plugin.armoryCommand(s, m, commandText)
-					},
-				},
-			},
+	armory := bot.QilbotCommand{
+		Command:     "armory",
+		Template:    "armory **item name**",
+		Description: "Search the armory for items.",
+		Execute: func(ctx *bot.QilbotCommandContext) {
+			plugin.armoryCommand(ctx)
 		},
 	}
 
-	qilbot.AddPlugin(plugin)
-
-	qilbot.AddCommand(&plugin.Commands[0])
+	qilbot.AddCommand(&armory)
 
 	return
 }
 
-func (plugin *Plugin) armoryCommand(s *bot.DiscordSession, m *discordgo.MessageCreate, commandText string) {
+func (plugin *Plugin) Name() string {
+	return name
+}
+
+func (plugin *Plugin) Description() string {
+	return description
+}
+
+func (plugin *Plugin) armoryCommand(ctx *bot.QilbotCommandContext) {
 	var buffer bytes.Buffer
 
-	logging.Info.Println("comand text", commandText)
+	logging.Info.Println("comand text", ctx.CommandText)
 
 	buffer.WriteString("This will give you armory link and all stuff you like")
 
-	s.RespondToUser(m, buffer.String())
+	ctx.RespondToUser(buffer.String())
 }

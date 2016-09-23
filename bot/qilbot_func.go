@@ -9,12 +9,11 @@ import (
 )
 
 // New creates a new instance of Qilbot
-func New(config *QilbotConfig) (bot *Qilbot, err error) {
-	bot = &Qilbot{
+func New(config *QilbotConfig) (*Qilbot, error) {
+	bot := Qilbot{
 		config:          config,
-		Plugins:         []IPlugin{},
 		stopChannel:     make(chan struct{}),
-		commands:        make(map[string]*CommandInformation),
+		commands:        make(map[string]*QilbotCommand),
 		commandSettings: make(map[string]*commandSettings),
 	}
 
@@ -30,7 +29,9 @@ func New(config *QilbotConfig) (bot *Qilbot, err error) {
 		return nil, ok2
 	}
 
-	return
+	bot.initialiseCommands()
+
+	return &bot, nil
 }
 
 func (qilbot *Qilbot) saveData() {
@@ -39,6 +40,8 @@ func (qilbot *Qilbot) saveData() {
 
 		if data, ok2 := utilities.ToJSON(&qilbot.commandSettings); ok2 == nil {
 			ok3 := utilities.SaveToFile(data, commandSettingsPath)
+
+			logging.Info.Println("Command settings saved.", len(data))
 
 			if ok3 != nil {
 				logging.Error.Println("Could not save command settings.", ok3)
@@ -73,7 +76,7 @@ func (qilbot *Qilbot) initialiseDiscord() (err error) {
 		logging.Error.Println("Could not create discord session, ", ok)
 		err = ok
 	} else {
-		qilbot.session = &DiscordSession{dg, false, false, ""}
+		qilbot.session = dg
 	}
 
 	// Get the account information.
@@ -104,7 +107,15 @@ func (qilbot *Qilbot) discordCreateMessage(s *discordgo.Session, m *discordgo.Me
 		commandCalled := matches[1]
 
 		if command, ok := qilbot.commands[commandCalled]; ok {
-			go command.Execute(qilbot.session, m, matches[2])
+			ctx := QilbotCommandContext{
+				Message:        m,
+				CommandText:    matches[2],
+				command:        command,
+				discordSession: qilbot.session,
+			}
+			logging.Trace.Printf("%p", qilbot)
+
+			go command.Execute(&ctx)
 		}
 	}
 }
@@ -131,19 +142,25 @@ func (qilbot *Qilbot) Stop() {
 	qilbot.saveData()
 }
 
-// AddPlugin Add a plugin to qilbot.
-func (qilbot *Qilbot) AddPlugin(plugin IPlugin) {
-	qilbot.Plugins = append(qilbot.Plugins, plugin)
-}
-
 // AddCommand Add a command to the list of commands available to qilbot.
-func (qilbot *Qilbot) AddCommand(command *CommandInformation) (err error) {
+func (qilbot *Qilbot) AddCommand(command *QilbotCommand) (err error) {
 	if _, ok := qilbot.commands[command.Command]; ok {
 		err = fmt.Errorf("Another command is registered with this '%s' name", command.Command)
 		return
 	}
 
+	if settings, ok := qilbot.commandSettings[command.Command]; ok {
+		command.settings = settings
+	} else {
+		emptySettings := commandSettings{"", true, false}
+
+		qilbot.commandSettings[command.Command] = &emptySettings
+
+		command.settings = &emptySettings
+	}
+
 	qilbot.commands[command.Command] = command
+
 	return
 }
 

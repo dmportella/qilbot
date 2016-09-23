@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"github.com/dmportella/qilbot/bot"
 	"github.com/dmportella/qilbot/logging"
-	"github.com/dmportella/qilbot/plugins/common"
 	"github.com/dmportella/qilbot/plugins/edsm"
 	"github.com/dmportella/qilbot/plugins/wow"
 	"io/ioutil"
@@ -123,17 +122,13 @@ func main() {
 }
 
 func loadPlugins() {
-	commonPlugin := common.NewPlugin(&botInstance)
-
-	logging.Info.Println(commonPlugin.GetHelpText())
-
 	edsmPlugin := edsm.NewPlugin(&botInstance)
 
-	logging.Info.Println(edsmPlugin.GetHelpText())
+	logging.Info.Println(edsmPlugin.Name(), "loaded")
 
 	wowPlugin := wow.NewPlugin(&botInstance)
 
-	logging.Info.Println(wowPlugin.GetHelpText())
+	logging.Info.Println(wowPlugin.Name(), "loaded")
 }
 
 func startbot() {
