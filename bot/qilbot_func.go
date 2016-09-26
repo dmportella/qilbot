@@ -107,6 +107,14 @@ func (qilbot *Qilbot) discordCreateMessage(s *discordgo.Session, m *discordgo.Me
 		commandCalled := matches[1]
 
 		if command, ok := qilbot.commands[commandCalled]; ok {
+			if command.settings.Disabled {
+				return
+			}
+
+			if command.settings.OnlyUsableOnChannelID != "" && m.ChannelID != command.settings.OnlyUsableOnChannelID {
+				return
+			}
+
 			ctx := QilbotCommandContext{
 				Message:        m,
 				CommandText:    matches[2],
@@ -152,7 +160,7 @@ func (qilbot *Qilbot) AddCommand(command *QilbotCommand) (err error) {
 	if settings, ok := qilbot.commandSettings[command.Command]; ok {
 		command.settings = settings
 	} else {
-		emptySettings := commandSettings{"", true, false}
+		emptySettings := commandSettings{"", false, false}
 
 		qilbot.commandSettings[command.Command] = &emptySettings
 

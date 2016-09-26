@@ -29,10 +29,12 @@ func NewPlugin(qilbot *bot.Qilbot) (plugin *Plugin) {
 	return
 }
 
+// Name returns the name of the plugin
 func (plugin *Plugin) Name() string {
 	return name
 }
 
+// Description returns the description of the plugin
 func (plugin *Plugin) Description() string {
 	return description
 }
@@ -42,7 +44,7 @@ func (plugin *Plugin) armoryCommand(ctx *bot.QilbotCommandContext) {
 
 	logging.Info.Println("comand text", ctx.CommandText)
 
-	buffer.WriteString("This will give you armory link and all stuff you like")
+	buffer.WriteString("underconstruction")
 
 	ctx.RespondToUser(buffer.String())
 }

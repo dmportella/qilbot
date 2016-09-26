@@ -39,6 +39,10 @@ func (qilbot *Qilbot) helpCommand(ctx *QilbotCommandContext) {
 	specificCommand := ctx.CommandText != ""
 
 	for _, command := range qilbot.commands {
+		if command.settings != nil && command.settings.Disabled {
+			continue
+		}
+
 		if strings.Compare(strings.ToLower(ctx.CommandText), strings.ToLower(command.Command)) == 0 {
 			buffer.WriteString(fmt.Sprintf("**%s** (%s): %s\n", command.Command, command.Template, command.Description))
 		} else if !specificCommand {
