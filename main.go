@@ -5,9 +5,9 @@ import (
 	"fmt"
 	"github.com/dmportella/qilbot/bot"
 	"github.com/dmportella/qilbot/logging"
-	"github.com/dmportella/qilbot/plugins/eddb"
+	//"github.com/dmportella/qilbot/plugins/eddb"
 	"github.com/dmportella/qilbot/plugins/edsm"
-	"github.com/dmportella/qilbot/plugins/wow"
+	//"github.com/dmportella/qilbot/plugins/wow"
 	"io/ioutil"
 	"os"
 	"os/signal"
@@ -123,17 +123,17 @@ func main() {
 }
 
 func loadPlugins() {
-	eddbPlugin := eddb.NewPlugin(&botInstance)
+	//eddbPlugin := eddb.NewPlugin(&botInstance)
 
-	logging.Info.Println(eddbPlugin.Name(), "loaded")
+	//logging.Info.Println(eddbPlugin.Name(), "loaded")
 
 	edsmPlugin := edsm.NewPlugin(&botInstance)
 
 	logging.Info.Println(edsmPlugin.Name(), "loaded")
 
-	wowPlugin := wow.NewPlugin(&botInstance)
+	//wowPlugin := wow.NewPlugin(&botInstance)
 
-	logging.Info.Println(wowPlugin.Name(), "loaded")
+	//logging.Info.Println(wowPlugin.Name(), "loaded")
 }
 
 func startbot() {
