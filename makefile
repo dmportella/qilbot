@@ -3,6 +3,7 @@ VETARGS?=-all
 GOFMT_FILES?=$$(find . -name '*.go' | grep -v vendor)
 REV?=$$(git rev-parse --short HEAD)
 BRANCH?=$$(git rev-parse --abbrev-ref HEAD)
+BUILDFILES?=$$(find bin -mindepth 1 -maxdepth 1 -type f)
 VERSION?="0.0.0"
 DOCKER_REPO?="dmportella/qilbot"
 TOKEN?=""
@@ -79,6 +80,15 @@ tar-everything:
 	@tar -zcvf bin/qilbot-freebsd-amd64-${VERSION}.tgz bin/freebsd-amd64
 	@zip -9 -y -r bin/qilbot-windows-386-${VERSION}.zip bin/windows-386
 	@zip -9 -y -r bin/qilbot-windows-amd64-${VERSION}.zip bin/windows-amd64
+
+shasums:
+	@shasum -a 256 $(BUILDFILES) > bin/qilbot-${VERSION}.shasums
+
+gpg:
+	@gpg --output bin/qilbot-${VERSION}.sig --detach-sig bin/qilbot-${VERSION}.shasums
+
+gpg-verify:
+	@gpg --verify bin/qilbot-${VERSION}.sig bin/qilbot-${VERSION}.shasums
 
 linux-build:
 	@echo "linux build... 386"
