@@ -21,6 +21,7 @@ before_deploy:
   - "export linux_arm=$(echo bin/qilbot-linux-arm-${TRAVIS_TAG}.tgz)"
   - "export windows_386=$(echo bin/qilbot-windows-386-${TRAVIS_TAG}.zip)"
   - "export windows_amd64=$(echo bin/qilbot-windows-amd64-${TRAVIS_TAG}.zip)"
+  - "export shasums=$(echo bin/qilbot-${TRAVIS_TAG}.shasums)"
 deploy:
   provider: releases
   api_key:
@@ -35,6 +36,7 @@ deploy:
     - "${linux_arm}"
     - "${windows_386}"
     - "${windows_amd64}"
+    - "${shasums}"
   on:
     repo: dmportella/qilbot
     tags: true
