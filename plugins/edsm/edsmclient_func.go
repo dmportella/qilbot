@@ -44,15 +44,21 @@ func (client *APIClient) request(method string, url string, b []byte) (response 
 
 	res, err := httpClient.Do(req)
 
-	defer res.Body.Close()
-
 	if err != nil {
 		logging.Warning.Println("Request error", err)
 		err = errors.New("Http request returned an error")
 		return
 	}
 
+	defer res.Body.Close()
+
 	response, err = ioutil.ReadAll(res.Body)
+
+	if err != nil {
+		logging.Warning.Println("Request error", err)
+		err = errors.New("Error while reading body")
+		return
+	}
 
 	if client.Debug {
 		logging.Trace.Printf("API REQUEST\tURL :: %s\n", url)
