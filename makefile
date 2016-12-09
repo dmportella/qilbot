@@ -126,7 +126,7 @@ lint:
 
 test: fmt generate lint vet
 	@echo "GO TEST..."
-	@go test $(TEST) $(TESTARGS) -timeout=30s -parallel=4 -bench=. -benchmem -cover
+	@go test $(TEST) $(TESTARGS) -v -timeout=30s -parallel=4 -bench=. -benchmem -cover
 
 cover:
 	@echo "GO TOOL COVER..."
