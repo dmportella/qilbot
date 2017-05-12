@@ -145,7 +145,7 @@ generate:
 # any common errors.
 vet:
 	@echo "GO VET..."
-	@go tool vet $(VETARGS) $$(ls -d $(PWD) | grep -v vendor)/; if [ $$? -eq 1 ]; then \
+	@govendor vet +l; if [ $$? -eq 1 ]; then \
 		echo ""; \
 		echo "Vet found suspicious constructs. Please check the reported constructs"; \
 		echo "and fix them if necessary before submitting the code for review."; \
